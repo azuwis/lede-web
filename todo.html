@@ -1,0 +1,236 @@
+<!doctype html>
+<!--[if IE 9]>
+<html class="lt-ie10" lang="en"> <![endif]-->
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Project ToDos</title>
+
+
+    <meta name="description"
+          content="Linux Embedded Development Environment, an embedded Linux distribution that makes it easy for developers, system administrators or other Linux enthusiasts to build and customize software for embedded devices, especially wireless routers."/>
+
+    <link rel="stylesheet" href="/lede-web/css/foundation.css"/>
+    <link rel="stylesheet" href="/lede-web/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/lede-web/css/coderay.css"/>
+    <link rel="stylesheet" href="/lede-web/css/asciidoctor.css"/>
+    <link rel="stylesheet" href="/lede-web/css/lede.css"/>
+    <script src="/lede-web/js/vendor/modernizr.js"></script>
+    <script src="/lede-web/js/toc.js"></script>
+</head>
+<body>
+
+
+<!-- Nav Bar -->
+
+<nav class="top-bar" data-topbar>
+    <ul class="title-area">
+        <!-- Title Area -->
+        <li class="name">
+            <h1>
+                <a href="#">
+                    <img src="/lede-web/logo/logo_small.png"></img>
+                    <span>Project ToDos</span>
+                </a>
+            </h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+    </ul>
+    <section class="top-bar-section">
+        <!-- Right Nav Section -->
+        <ul class="right">
+            <li><a href="/lede-web/index.html">Home</a></li>
+<li><a href="/lede-web/communication.html">Communication</a></li>
+<li><a href="/lede-web/rules.html">Rules</a></li>
+<li><a href="/lede-web/development.html">Development</a></li>
+<li class="active"><a href="/lede-web/todo.html">Todo</a></li>
+<li><a href="/lede-web/downloads.html">Downloads</a></li>
+<li><a href="/lede-web/docs/index.html">Documentation</a></li>
+<li><a href="/lede-web/about.html">About</a></li>
+
+        </ul>
+    </section>
+</nav>
+<!-- End Nav -->
+
+
+<!-- Main Page Content and Sidebar -->
+
+<div class="row">
+
+    <!-- Main Blog Content -->
+    <div class="large-9 columns" role="content">
+
+        <div class="sect1">
+<h2 id="todo_list">TODO List</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This page lists the current project wide todos. Items listed in random order without any prioritisation.</p>
+</div>
+<div class="sect2">
+<h3 id="project_reboot">Project Reboot</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Announce publicly</p>
+</li>
+<li>
+<p>Invite new developers</p>
+</li>
+<li>
+<p>Write letter of invite to (mesh) communities using the code base</p>
+</li>
+<li>
+<p>Ask communities to endorse <em>LEDE</em></p>
+</li>
+<li>
+<p>Announce feature freeze and start stabilising trunk</p>
+</li>
+<li>
+<p>Prepare <em>LEDE</em> #1 release</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="infrastructure">Infrastructure</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Provide a master for the download mirroring infrastructure</p>
+</li>
+<li>
+<p>Find mirroring capacity - we liberally distribute rsync keys if you have bandwidth and storage available on trusted infrastructure contact us</p>
+</li>
+<li>
+<p>Setup an issue tracker</p>
+</li>
+<li>
+<p>What shall we do about wiki and forum ?</p>
+</li>
+<li>
+<p>Find a Web Person to do some CSS magic</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="code_base">Code base</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Review recent IPV6 changes</p>
+</li>
+<li>
+<p>Review and fix procd, netfid, firewall issues/quirks</p>
+</li>
+<li>
+<p>Bump all kernels to v4.4</p>
+</li>
+<li>
+<p>Review PPPoE support</p>
+</li>
+<li>
+<p>Convert ar71xx to devicetree</p>
+</li>
+<li>
+<p>Document core services (procd, netifd, &#8230;&#8203;)</p>
+</li>
+<li>
+<p>Build new UCI docs</p>
+</li>
+<li>
+<p>Define rules for board support status Green, Orange, Red and start testing all supported boards</p>
+</li>
+<li>
+<p>integrate keyring support</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="releases">Releases</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Define the scope of the first release</p>
+</li>
+<li>
+<p>Define pre-release testing rules/guidelines</p>
+</li>
+<li>
+<p>Decide on new naming scheme - YY.MM + animal names have been proposed as an naming option</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="buildbot_setup">Buildbot Setup</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Rework buildbot setup to allow running more than one build in the same tree</p>
+</li>
+<li>
+<p>Rework buildbot setup to allow building release on the same setup</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+
+    </div>
+
+    <!-- End Main Content -->
+
+    <!-- Sidebar -->
+
+    <aside class="large-3 columns">
+        
+            <h4>Links</h4>
+<div class="panel">
+    <ul class="fa-ul">
+        <li><i class="fa-li fa fa-download" aria-hidden="true"></i><a href="https://downloads.lede-project.org/snapshots/targets/">Downloads</a></li>
+        <li><i class="fa-li fa fa-code-fork" aria-hidden="true"></i><a href="https://git.lede-project.org/">Git Repos</a></li>
+        <li><i class="fa-li fa fa-github" aria-hidden="true"></i><a href="https://github.com/lede-project">Github</a></li>
+        <li><i class="fa-li fa fa-archive" aria-hidden="true"></i><a href="https://sources.lede-project.org/">Source Archives</a></li>
+        <li><i class="fa-li fa fa-envelope" aria-hidden="true"></i><a href="http://lists.infradead.org/mailman/listinfo/lede-dev">Mailing List</a></li>
+        <li><i class="fa-li fa fa-twitter" aria-hidden="true"></i><a href="https://twitter.com/lede_project">Twitter</a></li>
+        <li><i class="fa-li fa fa-comment" aria-hidden="true"></i><a href="irc://irc.freenode.org/lede-dev">IRC</a></li>
+    </ul>
+</div>
+
+        
+    </aside>
+
+    <!-- End Sidebar -->
+</div>
+
+<!-- End Main Content and Sidebar -->
+
+
+<!-- Footer -->
+
+<footer class="row">
+    <div class="large-12 columns">
+        <hr/>
+        <div class="row">
+            <div class="large-12 columns">
+                <p>Last updated 2016-05-24 14:04:37</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="/lede-web/js/vendor/jquery.js"></script>
+<script src="/lede-web/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+
+    var doc = document.documentElement;
+    doc.setAttribute('data-useragent', navigator.userAgent);
+</script>
+</body>
+</html>

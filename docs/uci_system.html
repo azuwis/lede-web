@@ -1,0 +1,2683 @@
+<!doctype html>
+<!--[if IE 9]>
+<html class="lt-ie10" lang="en"> <![endif]-->
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>System configuration</title>
+
+
+    <meta name="description"
+          content="Linux Embedded Development Environment, an embedded Linux distribution that makes it easy for developers, system administrators or other Linux enthusiasts to build and customize software for embedded devices, especially wireless routers."/>
+
+    <link rel="stylesheet" href="/lede-web/css/foundation.css"/>
+    <link rel="stylesheet" href="/lede-web/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/lede-web/css/coderay.css"/>
+    <link rel="stylesheet" href="/lede-web/css/asciidoctor.css"/>
+    <link rel="stylesheet" href="/lede-web/css/lede.css"/>
+    <script src="/lede-web/js/vendor/modernizr.js"></script>
+    <script src="/lede-web/js/toc.js"></script>
+</head>
+<body>
+
+
+<!-- Nav Bar -->
+
+<nav class="top-bar" data-topbar>
+    <ul class="title-area">
+        <!-- Title Area -->
+        <li class="name">
+            <h1>
+                <a href="#">
+                    <img src="/lede-web/logo/logo_small.png"></img>
+                    <span>System configuration</span>
+                </a>
+            </h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+    </ul>
+    <section class="top-bar-section">
+        <!-- Right Nav Section -->
+        <ul class="right">
+            <li><a href="/lede-web/index.html">Home</a></li>
+<li><a href="/lede-web/communication.html">Communication</a></li>
+<li><a href="/lede-web/rules.html">Rules</a></li>
+<li><a href="/lede-web/development.html">Development</a></li>
+<li><a href="/lede-web/todo.html">Todo</a></li>
+<li><a href="/lede-web/downloads.html">Downloads</a></li>
+<li class="active"><a href="/lede-web/docs/index.html">Documentation</a></li>
+<li><a href="/lede-web/about.html">About</a></li>
+
+        </ul>
+    </section>
+</nav>
+<!-- End Nav -->
+
+
+<!-- Main Page Content and Sidebar -->
+
+<div class="row">
+
+    <!-- Main Blog Content -->
+    <div class="large-9 columns" role="content">
+
+        <div class="sect1">
+<h2 id="system_configuration">System configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The system UCI configuration is located in <strong><em>/etc/config/system</em></strong>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sections">Sections</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <em>system</em> configuration contains basic settings for the whole router. Larger subsystems such as the network configuration, the DHCP and DNS server, and similar, have their own configuration file.</p>
+</div>
+<div class="sect2">
+<h3 id="system">System</h3>
+<div class="paragraph">
+<p>The <em>system</em> section contains settings that apply to the most basic operation of the system, such as the hostname, the time zone, and how and where to write logging information to. The default settings are:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'system'
+	option 'hostname'	'lede'
+	option 'timezone'	'UTC'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These options can be set in the system section:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>hostname</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>lede</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The hostname for this system. Avoid points, even if they are within quotes. For example ' <em>my.hostname</em> ' will show only the ' <em>my</em> ' part</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>buffersize</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">kernel specific</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Size of the kernel message buffer.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>conloglevel</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>7</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Number between 1-8. The maximum log level for kernel messages to be logged to the console. Only messages with a level lower than this will be printed to the console. Higher level messages have lower log level number. Highest level messages are ones with log level 0. If you want more verbous messages in console put conloglevel to 8 if you want less messages lower conloglevel to 4 or even less.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>cronloglevel</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>5</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The minimul level for cron messages to be logged to syslog. <em>0</em> will print all debug messages, <em>8</em> will log command executions, and <em>9</em> or higher will only log error messages.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>klogconloglevel</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>7</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The maximum log level for kernel messages to be logged to the console. Only messages with a level lower than this will be printed to the console. Identical to <em>conloglevel</em> and will override it.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>log_buffer_size</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">16</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Size of the log buffer of the "new" procd based system log, that is output by the  <em>logread</em> command. Tried 32 kB, more should be possible.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>log_file</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no log file</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File to write log messages to (type <em>file</em>). The default is to not write a log in a file. The most often used location for a system log file is <em>/var/log/messages</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>log_ip</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IP address</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IP address of a syslog server to which the log messages should be sent in addition to the local destination.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>log_port</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>514</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Port number of the remote syslog server specified with <em>log_ip</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>log_prefix</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Adds a prefix to all log messages send over network.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>log_proto</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>udp</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the protocol to use for the connection, either <em>tcp</em> or <em>udp</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>log_remote</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bool</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enables remote logging.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>log_size</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>16</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Size of the file or circular memory buffer in KiB.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>log_trailer_null</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bool</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Use \0 instead of \n as trailer when using TCP.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>log_type</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>circular</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Either <em>circular</em> or <em>file</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>timezone</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>UTC</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The time zone that date and time should be rendered in by default.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>zonename</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>UTC</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Only useful when using glibc and zoneinfo! (<em>LIBC_USE_EGLIBC</em>, <em>PACKAGE_zoneinfo-*</em>) The time zone that date and time should be rendered in by default. Suppose you want to use Brussels' timezone, set this value to <em>Europe/Brussels</em>. Possible values can be found by running <em>(cd /usr/share/zoneinfo; find *)</em></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="remote_time_ntp">Remote Time (ntp)</h3>
+<div class="paragraph">
+<p>|   | In <em>/etc/config/system</em> <em>busybox-rdate</em> (was invoked by scripts) has been replaced with <em>busybox-nptd</em> (can run as a daemon) to avoid race condition and also to use current NTP. The remote time is since configured in <em>/etc/config/system</em> and not in <em>/etc/config/timeserver</em> any longer.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>WARNING:  Old scripts first checked if a lease time server is defined for the interface in the network config.</p>
+</li>
+<li>
+<p>WARNING:  If not available or syncing fails, then it searches for time servers in the timeserver config that are either explicitly defined for that interface or via the global setting in the system config.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'timeserver' 'ntp'
+	list 'server'     '0.openwrt.pool.ntp.org'
+	list 'server'     '1.openwrt.pool.ntp.org'
+	list 'server'     '2.openwrt.pool.ntp.org'
+	list 'server'     '3.openwrt.pool.ntp.org'
+	option enable_server 0</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There are at least two valid option defined for the <em>timeserver</em> <em>ntp</em> section:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>server</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of hostnames</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Defines the pool of NTP servers to poll the time from. If the list is empty, the builtin NTP daemon is not started.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>enable_server</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">You can put busybox-ntpd in\\ client mode only: by defining at least one host to <em>server</em> and puting <em>enable_server</em> 0 \\ client &amp; server mode: by putting <em>enable_server</em> to 1, (busybox-ntpd listens to UDP 123 by default),\\ server mode only: by not defining any servers in the config and just put <em>enable_server</em> 1 (ntpd will answer with the time of the router)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="leds">Leds</h3>
+<div class="paragraph">
+<p>LEDs are represented by entries in the <em>sys</em> filesystem. You can check which LEDs are available in the <em>/sys/class/leds</em> directory. The name of an entry typically consists of the name of the hardware providing the LED (the router model), the color of the LED, and it&#8217;s designation (usually the label on the case). Some LEDs can show different colors. In this case, you will find one entry per color.</p>
+</div>
+<div class="paragraph">
+<p>The LED can be controlled by various events in the system, which is selected by the <em>trigger</em> option. Depending on the trigger, additional options must be specified.</p>
+</div>
+<div class="paragraph">
+<p>First of all, you need to know which triggers are available for a led, to do that simply look at the <em>trigger</em> file of that led. Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cat /sys/class/leds/**LED**/trigger
+[none] timer default-on netdev morse usbdev</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="none">None</h3>
+<div class="paragraph">
+<p>The LED is always in default state. Unlisted LED are default OFF, so this is only useful to declare a LED to be always ON.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>default</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED state before trigger: <em>0</em> means OFF and <em>1</em> means ON</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>sysfs</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED device name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>trigger</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>none</em></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="timer">Timer</h3>
+<div class="paragraph">
+<p>The LED blinks with the configured on/off frequency.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>opkg install kmod-ledtrig-timer</pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>default</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED state before trigger: <em>0</em> means OFF and <em>1</em> means ON</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>delayoff</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How long (in milliseconds) the LED should be off.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>delayon</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How long (in milliseconds) the LED should be on.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>sysfs</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED device name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>trigger</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>timer</em></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="default_on">Default-on</h3>
+<div class="paragraph">
+<p>The LED is ON. Deprecated, use default=1 trigger=none instead.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>opkg install kmod-ledtrig-default-on</pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>default</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED state before trigger: <em>0</em> means OFF and <em>1</em> means ON</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>sysfs</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED device name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>trigger</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>default-on</em></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="heartbeat">Heartbeat</h3>
+<div class="paragraph">
+<p>The LED flashes to simulate actual heart beat <em>thump-thump-pause</em>. The frequency is in direct proportion to 1-minute average CPU load.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>opkg install kmod-ledtrig-heartbeat</pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>default</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED state before trigger: <em>0</em> means OFF and <em>1</em> means ON</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>sysfs</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED device name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>trigger</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>heartbeat</em></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="flash_writes">Flash Writes</h3>
+<div class="paragraph">
+<p>The LED flashes as data is written to flash memory.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>default</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED state before trigger: <em>0</em> means OFF and <em>1</em> means ON</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>sysfs</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED device name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>trigger</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>nand-disk</em></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="network_activity">Network Activity</h3>
+<div class="paragraph">
+<p>The LED flashes with link status and/or send and receive activity on the configured interface.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>opkg install kmod-ledtrig-netdev</pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>default</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED state before trigger: <em>0</em> means OFF and <em>1</em> means ON</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dev</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the network interface which status should be reflected</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>mode</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">One or more of <em>link</em>, <em>tx</em>, or <em>rx</em>, seperated by spaces</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>sysfs</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED device name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>trigger</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>netdev</em></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="wifi_activity">WiFi Activity</h3>
+<div class="paragraph">
+<p>The LED flashes on events triggered in physical interface, rather than in software network interface. Besides <em>phy</em>
+triggers have more events, it also provides possibility of static LED setup in case you want to monitor your 2.4 GHz
+radio (<em>phy0</em> usually) and 5 GHz radio (<em>phy1</em> usually) separately. <em>netdev</em> can&#8217;t guarantee this distinguishing
+since <em>wlan0</em> may be referring to 2.4 GHz or 5 GHz radio based on current network setup.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>default</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED state before trigger: <em>0</em> means OFF and <em>1</em> means ON</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>sysfs</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED device name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>trigger</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>phy0rx</em>, <em>phy0tx</em>, <em>phy0assoc</em>, <em>phy0radio</em> or <em>phy0tpt</em></p></td>
+</tr>
+</tbody>
+</table>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>phy0rx</strong> - flashes on reception.</p>
+</li>
+<li>
+<p><strong>phy0tx</strong> - flashes on transmission.</p>
+</li>
+<li>
+<p><strong>phy0assoc</strong> - flashes on client association.</p>
+</li>
+<li>
+<p><strong>phy0radio</strong> - (WARNING:  hard to say what this is supposed to do; this option did nothing on my tl-wr1043nd with Backfire 10.03.1, r29592 and Attitude Adjustment r32793)</p>
+</li>
+<li>
+<p><strong>phy0tpt</strong> - flashes slowly and steadily on network activity.in comparison to energetic flashes of tx and rx modes</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="usb_device">USB Device</h3>
+<div class="paragraph">
+<p>The LED turns ON if USB device is connected.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>opkg install kmod-ledtrig-usbdev</pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>default</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED state before trigger: <em>0</em> means OFF and <em>1</em> means ON</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dev</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of USB device to monitor (in this example <em>1-1</em>).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>interval</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Interval in ms when device is active.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>sysfs</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED device name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>trigger</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>usbdev</em></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>To find out device name use <em>logread</em> to search for it or list <em>/sys/bus/usb/devices</em> (for this example, there would be <em>/sys/bus/usb/devices/1-1</em> device).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="morse_code">Morse Code</h3>
+<div class="paragraph">
+<p>The LED signals a message using Morse code.</p>
+</div>
+<div class="paragraph">
+<p>Requires the kmod-ledtrig-morse package.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>opkg install kmod-ledtrig-morse</pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>default</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED state before trigger: <em>0</em> means OFF and <em>1</em> means ON</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>delay</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">150</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Dit length in milliseconds</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dev</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of USB device to monitor (in this example <em>1-1</em>).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>message</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The message to signal</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>sysfs</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED device name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>trigger</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>morse</em></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="gpio">GPIO</h3>
+<div class="paragraph">
+<p>Allows LEDs to be controlled by gpio events.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>opkg install kmod-ledtrig-gpio</pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>default</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED state before trigger: <em>0</em> means OFF and <em>1</em> means ON</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="net_filter">Net filter</h3>
+<div class="listingblock">
+<div class="content">
+<pre>opkg install kmod-ledtrig-netfilter</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Flash LED when a particular packets passing through your machine.</p>
+</div>
+<div class="paragraph">
+<p>For example to create an LED trigger for incoming SSH traffic:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>iptables -A INPUT -p tcp --dport 22 -j LED --led-trigger-id ssh --led-delay 1000</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then attach the new trigger to an LED on your system:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>echo netfilter-ssh &gt; /sys/class/leds/&lt;ledname&gt;/trigger</pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>default</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LED state before trigger: <em>0</em> means OFF and <em>1</em> means ON</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples">Examples</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Please remember to change the <em>sysfs</em> option to LEDs that are actually present on your router. This can be done easily through LuCI. Following examples are from <em>/etc/config/system</em> file:</p>
+</div>
+<div class="sect2">
+<h3 id="heartbeat_led">Heartbeat led</h3>
+<div class="listingblock">
+<div class="content">
+<pre>config 'led'
+	option 'sysfs'		'wrt160nl:amber:wps'
+	option 'trigger'	'heartbeat'</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="wlan_led">WLAN led</h3>
+<div class="listingblock">
+<div class="content">
+<pre>config 'led' 'wlan_led'
+	option 'name'           'WLAN'
+	option 'sysfs'          'tl-wr1043nd:green:wlan'
+	option 'trigger'        'netdev'
+	option 'dev'            'wlan0'
+	option 'mode'           'link tx rx'</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="3g_led">3G led</h3>
+<div class="paragraph">
+<p>The 3G LED lits up in blue when an USB-dongle properly registers with the 3G/EDGE/GPRS network. Tested on Asus&#8217;s WL-330N3G router.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'led'
+	option 'name'           '3G'
+	option 'sysfs'          'asus:blue:3g'
+	option 'trigger'        'netdev'
+	option 'dev'            '3g-wan'
+	option 'mode'           'link'</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="timer_led_500ms_on_2000ms_off">Timer led - 500ms ON, 2000ms OFF</h3>
+<div class="listingblock">
+<div class="content">
+<pre>config 'led'
+	option 'sysfs'		'wrt160nl:blue:wps'
+	option 'trigger'	'timer'
+	option 'delayon'	'500'
+	option 'delayoff'	'2000'</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="time_zones">Time Zones</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Location</th>
+<th class="tableblock halign-left valign-top">TZ string</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Abidjan</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Accra</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Addis Ababa</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EAT-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Algiers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Asmara</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EAT-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Bamako</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Bangui</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WAT-1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Banjul</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Bissau</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Blantyre</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CAT-2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Brazzaville</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WAT-1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Bujumbura</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CAT-2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Casablanca</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WET0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Ceuta</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Conakry</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Dakar</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Dar es Salaam</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EAT-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Djibouti</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EAT-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Douala</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WAT-1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/El Aaiun</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WET0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Freetown</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Gaborone</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CAT-2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Harare</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CAT-2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Johannesburg</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SAST-2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Kampala</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EAT-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Khartoum</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EAT-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Kigali</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CAT-2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Kinshasa</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WAT-1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Lagos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WAT-1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Libreville</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WAT-1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Lome</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Luanda</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WAT-1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Lubumbashi</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CAT-2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Lusaka</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CAT-2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Malabo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WAT-1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Maputo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CAT-2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Maseru</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SAST-2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Mbabane</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SAST-2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Mogadishu</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EAT-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Monrovia</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Nairobi</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EAT-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Ndjamena</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WAT-1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Niamey</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WAT-1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Nouakchott</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Ouagadougou</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Porto-Novo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WAT-1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Sao Tome</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Tripoli</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Tunis</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa/Windhoek</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WAT-1WAST,M9.1.0,M4.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Adak</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HAST10HADT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Anchorage</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AKST9AKDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Anguilla</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Antigua</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Araguaina</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BRT3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Argentina/Buenos Aires</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ART3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Argentina/Catamarca</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ART3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Argentina/Cordoba</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ART3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Argentina/Jujuy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ART3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Argentina/La Rioja</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ART3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Argentina/Mendoza</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ART3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Argentina/Rio Gallegos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ART3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Argentina/Salta</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ART3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Argentina/San Juan</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ART3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Argentina/Tucuman</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ART3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Argentina/Ushuaia</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ART3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Aruba</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Asuncion</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PYT4PYST,M10.1.0/0,M4.2.0/0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Atikokan</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Bahia</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BRT3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Barbados</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Belem</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BRT3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Belize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Blanc-Sablon</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Boa Vista</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AMT4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Bogota</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">COT5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Boise</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MST7MDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Cambridge Bay</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MST7MDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Campo Grande</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AMT4AMST,M10.3.0/0,M2.3.0/0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Cancun</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6CDT,M4.1.0,M10.5.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Caracas</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VET4:30</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Cayenne</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GFT3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Cayman</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Chicago</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6CDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Chihuahua</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MST7MDT,M4.1.0,M10.5.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Costa Rica</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Cuiaba</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AMT4AMST,M10.3.0/0,M2.3.0/0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Curacao</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Danmarkshavn</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Dawson</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PST8PDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Dawson Creek</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MST7</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Denver</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MST7MDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Detroit</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Dominica</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Edmonton</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MST7MDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Eirunepe</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AMT4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/El Salvador</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Fortaleza</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BRT3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Glace Bay</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4ADT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Goose Bay</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4ADT,M3.2.0/0:01,M11.1.0/0:01</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Grand Turk</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Grenada</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Guadeloupe</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Guatemala</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Guayaquil</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ECT5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Guyana</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GYT4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Halifax</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4ADT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Havana</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST5CDT,M3.2.0/0,M10.5.0/1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Hermosillo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MST7</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Indiana/Indianapolis</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Indiana/Knox</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6CDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Indiana/Marengo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Indiana/Petersburg</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Indiana/Tell City</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6CDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Indiana/Vevay</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Indiana/Vincennes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Indiana/Winamac</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Inuvik</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MST7MDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Iqaluit</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Jamaica</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Juneau</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AKST9AKDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Kentucky/Louisville</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Kentucky/Monticello</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/La Paz</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BOT4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Lima</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PET5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Los Angeles</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PST8PDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Maceio</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BRT3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Managua</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Manaus</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AMT4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Marigot</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Martinique</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Matamoros</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6CDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Mazatlan</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MST7MDT,M4.1.0,M10.5.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Menominee</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6CDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Merida</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6CDT,M4.1.0,M10.5.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Mexico City</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6CDT,M4.1.0,M10.5.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Miquelon</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PMST3PMDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Moncton</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4ADT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Monterrey</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6CDT,M4.1.0,M10.5.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Montevideo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">UYT3UYST,M10.1.0,M3.2.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Montreal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Montserrat</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Nassau</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/New York</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Nipigon</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Nome</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AKST9AKDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Noronha</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">FNT2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/North Dakota/Center</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6CDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/North Dakota/New Salem</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6CDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Ojinaga</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MST7MDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Panama</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Pangnirtung</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Paramaribo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SRT3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Phoenix</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MST7</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Port of Spain</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Port-au-Prince</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Porto Velho</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AMT4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Puerto Rico</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Rainy River</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6CDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Rankin Inlet</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6CDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Recife</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BRT3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Regina</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Rio Branco</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AMT4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Santa Isabel</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PST8PDT,M4.1.0,M10.5.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Santarem</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BRT3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Santo Domingo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Sao Paulo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BRT3BRST,M10.3.0/0,M2.3.0/0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Scoresbysund</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EGT1EGST,M3.5.0/0,M10.5.0/1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Shiprock</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MST7MDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/St Barthelemy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/St Johns</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NST3:30NDT,M3.2.0/0:01,M11.1.0/0:01</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/St Kitts</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/St Lucia</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/St Thomas</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/St Vincent</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Swift Current</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Tegucigalpa</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Thule</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4ADT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Thunder Bay</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Tijuana</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PST8PDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Toronto</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST5EDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Tortola</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Vancouver</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PST8PDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Whitehorse</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PST8PDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Winnipeg</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST6CDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Yakutat</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AKST9AKDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America/Yellowknife</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MST7MDT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Antarctica/Casey</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WST-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Antarctica/Davis</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DAVT-7</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Antarctica/DumontDUrville</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DDUT-10</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Antarctica/Macquarie</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MIST-11</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Antarctica/Mawson</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MAWT-5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Antarctica/McMurdo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NZST-12NZDT,M9.5.0,M4.1.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Antarctica/Rothera</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ROTT3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Antarctica/South Pole</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NZST-12NZDT,M9.5.0,M4.1.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Antarctica/Syowa</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SYOT-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Antarctica/Vostok</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VOST-6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Arctic/Longyearbyen</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Aden</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Almaty</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ALMT-6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Anadyr</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ANAT-11ANAST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Aqtau</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AQTT-5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Aqtobe</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AQTT-5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Ashgabat</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TMT-5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Baghdad</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Bahrain</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Baku</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AZT-4AZST,M3.5.0/4,M10.5.0/5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Bangkok</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ICT-7</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Beirut</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0/0,M10.5.0/0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Bishkek</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">KGT-6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Brunei</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BNT-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Choibalsan</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CHOT-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Chongqing</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Colombo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IST-5:30</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Damascus</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M4.1.5/0,M10.5.5/0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Dhaka</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BDT-6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Dili</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TLT-9</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Dubai</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GST-4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Dushanbe</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TJT-5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Gaza</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.6/0:01,M9.1.5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Harbin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Ho Chi Minh</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ICT-7</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Hong Kong</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HKT-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Hovd</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HOVT-7</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Irkutsk</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IRKT-8IRKST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Jakarta</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WIT-7</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Jayapura</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EIT-9</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Kabul</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AFT-4:30</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Kamchatka</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PETT-11PETST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Karachi</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PKT-5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Kashgar</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Kathmandu</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NPT-5:45</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Kolkata</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IST-5:30</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Krasnoyarsk</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">KRAT-7KRAST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Kuala Lumpur</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MYT-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Kuching</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MYT-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Kuwait</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Macau</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Magadan</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MAGT-11MAGST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Makassar</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CIT-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Manila</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PHT-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Muscat</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GST-4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Nicosia</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0/3,M10.5.0/4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Novokuznetsk</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NOVT-6NOVST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Novosibirsk</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NOVT-6NOVST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Omsk</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OMST-7</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Oral</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ORAT-5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Phnom Penh</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ICT-7</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Pontianak</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WIT-7</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Pyongyang</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">KST-9</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Qatar</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Qyzylorda</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">QYZT-6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Rangoon</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MMT-6:30</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Riyadh</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Sakhalin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SAKT-10SAKST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Samarkand</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">UZT-5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Seoul</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">KST-9</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Shanghai</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Singapore</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SGT-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Taipei</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Tashkent</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">UZT-5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Tbilisi</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET-4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Tehran</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IRST-3:30IRDT,80/0,264/0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Thimphu</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BTT-6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Tokyo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JST-9</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Ulaanbaatar</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ULAT-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Urumqi</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Vientiane</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ICT-7</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Vladivostok</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VLAT-10VLAST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Yakutsk</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">YAKT-9YAKST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Yekaterinburg</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">YEKT-5YEKST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia/Yerevan</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AMT-4AMST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Atlantic/Azores</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AZOT1AZOST,M3.5.0/0,M10.5.0/1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Atlantic/Bermuda</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AST4ADT,M3.2.0,M11.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Atlantic/Canary</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WET0WEST,M3.5.0/1,M10.5.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Atlantic/Cape Verde</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CVT1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Atlantic/Faroe</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WET0WEST,M3.5.0/1,M10.5.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Atlantic/Madeira</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WET0WEST,M3.5.0/1,M10.5.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Atlantic/Reykjavik</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Atlantic/South Georgia</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GST2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Atlantic/St Helena</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Atlantic/Stanley</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">FKT4FKST,M9.1.0,M4.3.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Australia/Adelaide</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST-9:30CST,M10.1.0,M4.1.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Australia/Brisbane</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST-10</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Australia/Broken Hill</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST-9:30CST,M10.1.0,M4.1.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Australia/Currie</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST-10EST,M10.1.0,M4.1.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Australia/Darwin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CST-9:30</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Australia/Eucla</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CWST-8:45</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Australia/Hobart</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST-10EST,M10.1.0,M4.1.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Australia/Lindeman</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST-10</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Australia/Lord Howe</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LHST-10:30LHST-11,M10.1.0,M4.1.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Australia/Melbourne</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST-10EST,M10.1.0,M4.1.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Australia/Perth</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WST-8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Australia/Sydney</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EST-10EST,M10.1.0,M4.1.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Amsterdam</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Andorra</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Athens</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0/3,M10.5.0/4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Belgrade</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Berlin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Bratislava</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Brussels</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Bucharest</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0/3,M10.5.0/4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Budapest</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Chisinau</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0/3,M10.5.0/4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Copenhagen</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Dublin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0IST,M3.5.0/1,M10.5.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Gibraltar</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Guernsey</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0BST,M3.5.0/1,M10.5.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Helsinki</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0/3,M10.5.0/4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Isle of Man</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0BST,M3.5.0/1,M10.5.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Istanbul</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0/3,M10.5.0/4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Jersey</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0BST,M3.5.0/1,M10.5.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Kaliningrad</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Kiev</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0/3,M10.5.0/4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Lisbon</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WET0WEST,M3.5.0/1,M10.5.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Ljubljana</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/London</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GMT0BST,M3.5.0/1,M10.5.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Luxembourg</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Madrid</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Malta</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Mariehamn</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0/3,M10.5.0/4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Minsk</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Monaco</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Moscow</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MSK-4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Oslo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Paris</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Podgorica</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Prague</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Riga</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0/3,M10.5.0/4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Rome</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Samara</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SAMT-3SAMST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/San Marino</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Sarajevo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Simferopol</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0/3,M10.5.0/4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Skopje</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Sofia</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0/3,M10.5.0/4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Stockholm</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Tallinn</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0/3,M10.5.0/4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Tirane</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Uzhgorod</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0/3,M10.5.0/4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Vaduz</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Vatican</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Vienna</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Vilnius</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0/3,M10.5.0/4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Volgograd</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VOLT-3VOLST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Warsaw</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Zagreb</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Zaporozhye</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EET-2EEST,M3.5.0/3,M10.5.0/4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe/Zurich</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET-1CEST,M3.5.0,M10.5.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Indian/Antananarivo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EAT-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Indian/Chagos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IOT-6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Indian/Christmas</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CXT-7</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Indian/Cocos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CCT-6:30</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Indian/Comoro</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EAT-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Indian/Kerguelen</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TFT-5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Indian/Mahe</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SCT-4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Indian/Maldives</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MVT-5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Indian/Mauritius</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MUT-4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Indian/Mayotte</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EAT-3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Indian/Reunion</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RET-4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Apia</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WST11</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Auckland</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NZST-12NZDT,M9.5.0,M4.1.0/3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Chatham</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CHAST-12:45CHADT,M9.5.0/2:45,M4.1.0/3:45</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Efate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VUT-11</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Enderbury</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PHOT-13</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Fakaofo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TKT10</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Fiji</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">FJT-12</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Funafuti</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TVT-12</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Galapagos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GALT6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Gambier</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GAMT9</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Guadalcanal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SBT-11</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Guam</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ChST-10</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Honolulu</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HST10</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Johnston</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HST10</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Kiritimati</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LINT-14</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Kosrae</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">KOST-11</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Kwajalein</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MHT-12</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Majuro</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MHT-12</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Marquesas</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MART9:30</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Midway</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SST11</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Nauru</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NRT-12</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Niue</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NUT11</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Norfolk</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NFT-11:30</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Noumea</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NCT-11</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Pago Pago</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SST11</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Palau</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PWT-9</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Pitcairn</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PST8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Ponape</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PONT-11</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Port Moresby</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PGT-10</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Rarotonga</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CKT10</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Saipan</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ChST-10</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Tahiti</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TAHT10</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Tarawa</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GILT-12</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Tongatapu</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TOT-13</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Truk</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TRUT-10</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Wake</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WAKT-12</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pacific/Wallis</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WFT-12</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+    </div>
+
+    <!-- End Main Content -->
+
+    <!-- Sidebar -->
+
+    <aside class="large-3 columns">
+        
+            <h4>Documents</h4>
+<div class="panel">
+    <div id="toc" class="toc">
+        <ul class="sectlevel0">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="config.html">Configuration</a></li>
+            <li><a href="ubus.html">uBus</a></li>
+            <li><a href="procd.html">Procd</a></li>
+            <li><a href="uci.html">UCI Document</a></li>
+            <ul class="sectlevel0">
+                <li><a href="uci_dnsmasq.html">DHCP</a></li>
+                <li><a href="uci_dropbear.html">Dropbear</a></li>
+                <li><a href="uci_firewall.html">Firewall</a></li>
+                <li><a href="uci_fstab.html">FSTab</a></li>
+                <li><a href="uci_net.html">Network</a></li>
+                <li><a href="uci_qos.html">QoS</a></li>
+                <li><a href="uci_samba.html">Samba</a></li>
+                <li class="active"><a href="uci_system.html">System</a></li>
+                <li><a href="uci_wireless.html">Wireless</a></li>
+            </ul>
+        </ul>
+    </div>
+</div>
+
+        
+    </aside>
+
+    <!-- End Sidebar -->
+</div>
+
+<!-- End Main Content and Sidebar -->
+
+
+<!-- Footer -->
+
+<footer class="row">
+    <div class="large-12 columns">
+        <hr/>
+        <div class="row">
+            <div class="large-12 columns">
+                <p>Last updated 2016-05-24 14:04:48</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="/lede-web/js/vendor/jquery.js"></script>
+<script src="/lede-web/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+
+    var doc = document.documentElement;
+    doc.setAttribute('data-useragent', navigator.userAgent);
+</script>
+</body>
+</html>

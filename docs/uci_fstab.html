@@ -1,0 +1,365 @@
+<!doctype html>
+<!--[if IE 9]>
+<html class="lt-ie10" lang="en"> <![endif]-->
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Fstab Configuration</title>
+
+
+    <meta name="description"
+          content="Linux Embedded Development Environment, an embedded Linux distribution that makes it easy for developers, system administrators or other Linux enthusiasts to build and customize software for embedded devices, especially wireless routers."/>
+
+    <link rel="stylesheet" href="/lede-web/css/foundation.css"/>
+    <link rel="stylesheet" href="/lede-web/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/lede-web/css/coderay.css"/>
+    <link rel="stylesheet" href="/lede-web/css/asciidoctor.css"/>
+    <link rel="stylesheet" href="/lede-web/css/lede.css"/>
+    <script src="/lede-web/js/vendor/modernizr.js"></script>
+    <script src="/lede-web/js/toc.js"></script>
+</head>
+<body>
+
+
+<!-- Nav Bar -->
+
+<nav class="top-bar" data-topbar>
+    <ul class="title-area">
+        <!-- Title Area -->
+        <li class="name">
+            <h1>
+                <a href="#">
+                    <img src="/lede-web/logo/logo_small.png"></img>
+                    <span>Fstab Configuration</span>
+                </a>
+            </h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+    </ul>
+    <section class="top-bar-section">
+        <!-- Right Nav Section -->
+        <ul class="right">
+            <li><a href="/lede-web/index.html">Home</a></li>
+<li><a href="/lede-web/communication.html">Communication</a></li>
+<li><a href="/lede-web/rules.html">Rules</a></li>
+<li><a href="/lede-web/development.html">Development</a></li>
+<li><a href="/lede-web/todo.html">Todo</a></li>
+<li><a href="/lede-web/downloads.html">Downloads</a></li>
+<li class="active"><a href="/lede-web/docs/index.html">Documentation</a></li>
+<li><a href="/lede-web/about.html">About</a></li>
+
+        </ul>
+    </section>
+</nav>
+<!-- End Nav -->
+
+
+<!-- Main Page Content and Sidebar -->
+
+<div class="row">
+
+    <!-- Main Blog Content -->
+    <div class="large-9 columns" role="content">
+
+        <div class="sect1">
+<h2 id="fstab_configuration">Fstab Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Fstab, or <strong>f</strong>ile <strong>s</strong>ystems <strong>tab</strong>le, is a central configuration that defines how file systems (usually on block devices) should be mounted if requested (such as on booting the device or connecting it physically). This way, you don&#8217;t have to manually mount your devices when you want to access them. The mounting configuration can consist of static file systems but also swap partitions. The fstab UCI configuration file is where all the options for all devices and file systems to be mounted are defined and is located at <strong><em>/etc/config/fstab</em></strong>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="initial_configuration">Initial Configuration</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="package_installation">Package Installation</h3>
+<div class="listingblock">
+<div class="content">
+<pre>opkg update
+opkg install block-mount</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="creating_initial_fstab_automatically">Creating Initial fstab Automatically</h3>
+<div class="paragraph">
+<p>You can use the <em>block</em> utility. Call <em>block detect</em> to get a sample <a href="uci.html">UCI</a> configuration file. You can change this to your liking.</p>
+</div>
+<div class="paragraph">
+<p>You can quickly install this standard configuration using:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>block detect &gt; /etc/config/fstab</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next, edit your fstab, as per the configuration below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>vi /etc/config/fstab</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the mount target is <em>/</em> then it will be used as external root upon boot. See <a href="https://wiki.openwrt.org/doc/howto/extroot">HOWTO extroot</a> for more information. Running <em>block info</em> is also valid to get the uuid of different file systems. Also see this guide: <a href="https://wiki.openwrt.org/doc/techref/block_mount">OpenWrt techref</a> for technical details of the mounting process and scripts involved.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="enable_fstab_at_boot">Enable fstab at Boot</h3>
+<div class="paragraph">
+<p>To enable use the following command</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>/etc/init.d/fstab enable</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Whenever you change your configuration, restart this to make it take effect:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>block umount
+block mount</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="configuration">Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The configuration file consists of a <em>global</em> section defining defaults, <em>mount</em> sections defining file systems to be mounted and <em>swap</em> sections defining partitions to be activated.</p>
+</div>
+<div class="sect2">
+<h3 id="the_global_section">The Global section</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>anon_swap</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mount swap devices that don&#8217;t have their own config section</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>anon_mount</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mount block devices that don&#8217;t have their own config section</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>auto_swap</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">automatically mount swap devices when they appear</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>auto_mount</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">automatically mount block devices when they appear</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>delay_root</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">wait X seconds before trying to mount root devices on boot</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>check_fs</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">run e2fsck on device prior to a mount</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="the_swap_sections">The Swap sections</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>device</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The swap partition&#8217;s device node (e.g. sda1)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>uuid</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The swap partition&#8217;s UUID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>label</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The swap partition&#8217;s label (e.g. mkswap -L label /dev/sdb2)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="the_mount_sections">The Mount sections</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>device</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The data partition&#8217;s device node (e.g. sda1)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>uuid</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The data partition&#8217;s UUID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>target</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The data partition&#8217;s mount point. Some values have special meanings, see the Extroot section below.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the_right_amount_of_swap">The right amount of SWAP</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you ask people or search the net, you will find as a general rule of thumb <em>double RAM</em> for machines with 512MiB of RAM or less than, and <em>same amount as RAM</em> for machines with more. But this very rough estimate does apply for your embedded device! Be aware that there are exactly two differences between RAM and SWAP that matter: the <strong>access time</strong> and the <strong>price</strong>. A CUPS spooling server will run just fine when only SWAP is available, whereas some applications may perform very poorly when their data it stored on the SWAP rather then being kept in the "real" RAM. The decision which data is kept in the RAM and which is stored on the SWAP is made by the system. In contrast to other operating systems, Linux makes ample use of memory, so that your system runs smoother and more efficiently. If memory is then needed by an application, the system will unload stuff again, and make memory available.</p>
+</div>
+</div>
+</div>
+
+    </div>
+
+    <!-- End Main Content -->
+
+    <!-- Sidebar -->
+
+    <aside class="large-3 columns">
+        
+            <h4>Documents</h4>
+<div class="panel">
+    <div id="toc" class="toc">
+        <ul class="sectlevel0">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="config.html">Configuration</a></li>
+            <li><a href="ubus.html">uBus</a></li>
+            <li><a href="procd.html">Procd</a></li>
+            <li><a href="uci.html">UCI Document</a></li>
+            <ul class="sectlevel0">
+                <li><a href="uci_dnsmasq.html">DHCP</a></li>
+                <li><a href="uci_dropbear.html">Dropbear</a></li>
+                <li><a href="uci_firewall.html">Firewall</a></li>
+                <li class="active"><a href="uci_fstab.html">FSTab</a></li>
+                <li><a href="uci_net.html">Network</a></li>
+                <li><a href="uci_qos.html">QoS</a></li>
+                <li><a href="uci_samba.html">Samba</a></li>
+                <li><a href="uci_system.html">System</a></li>
+                <li><a href="uci_wireless.html">Wireless</a></li>
+            </ul>
+        </ul>
+    </div>
+</div>
+
+        
+    </aside>
+
+    <!-- End Sidebar -->
+</div>
+
+<!-- End Main Content and Sidebar -->
+
+
+<!-- Footer -->
+
+<footer class="row">
+    <div class="large-12 columns">
+        <hr/>
+        <div class="row">
+            <div class="large-12 columns">
+                <p>Last updated 2016-05-24 14:04:48</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="/lede-web/js/vendor/jquery.js"></script>
+<script src="/lede-web/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+
+    var doc = document.documentElement;
+    doc.setAttribute('data-useragent', navigator.userAgent);
+</script>
+</body>
+</html>

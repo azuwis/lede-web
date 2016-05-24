@@ -1,0 +1,196 @@
+<!doctype html>
+<!--[if IE 9]>
+<html class="lt-ie10" lang="en"> <![endif]-->
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Downloads</title>
+
+
+    <meta name="description"
+          content="Linux Embedded Development Environment, an embedded Linux distribution that makes it easy for developers, system administrators or other Linux enthusiasts to build and customize software for embedded devices, especially wireless routers."/>
+
+    <link rel="stylesheet" href="/lede-web/css/foundation.css"/>
+    <link rel="stylesheet" href="/lede-web/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/lede-web/css/coderay.css"/>
+    <link rel="stylesheet" href="/lede-web/css/asciidoctor.css"/>
+    <link rel="stylesheet" href="/lede-web/css/lede.css"/>
+    <script src="/lede-web/js/vendor/modernizr.js"></script>
+    <script src="/lede-web/js/toc.js"></script>
+</head>
+<body>
+
+
+<!-- Nav Bar -->
+
+<nav class="top-bar" data-topbar>
+    <ul class="title-area">
+        <!-- Title Area -->
+        <li class="name">
+            <h1>
+                <a href="#">
+                    <img src="/lede-web/logo/logo_small.png"></img>
+                    <span>Downloads</span>
+                </a>
+            </h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+    </ul>
+    <section class="top-bar-section">
+        <!-- Right Nav Section -->
+        <ul class="right">
+            <li><a href="/lede-web/index.html">Home</a></li>
+<li><a href="/lede-web/communication.html">Communication</a></li>
+<li><a href="/lede-web/rules.html">Rules</a></li>
+<li><a href="/lede-web/development.html">Development</a></li>
+<li><a href="/lede-web/todo.html">Todo</a></li>
+<li class="active"><a href="/lede-web/downloads.html">Downloads</a></li>
+<li><a href="/lede-web/docs/index.html">Documentation</a></li>
+<li><a href="/lede-web/about.html">About</a></li>
+
+        </ul>
+    </section>
+</nav>
+<!-- End Nav -->
+
+
+<!-- Main Page Content and Sidebar -->
+
+<div class="row">
+
+    <!-- Main Blog Content -->
+    <div class="large-9 columns" role="content">
+
+        <div class="sect1">
+<h2 id="snapshot_builds">Snapshot builds</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The current master branch is regularly processed by a buildbot setup and the
+resulting images can be found on <a href="https://downloads.lede-project.org/snapshots/targets/" class="bare">https://downloads.lede-project.org/snapshots/targets/</a></p>
+</div>
+<div class="paragraph">
+<p>You can find the BuildBots activity in the following links:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Phase 1: <a href="http://phase1.builds.lede-project.org/builders">target/subtargets</a></p>
+</li>
+<li>
+<p>Phase 2: <a href="http://phase2.builds.lede-project.org/builders">packages</a></p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="mirrors">Mirrors</h3>
+<div class="paragraph">
+<p>The contents of the download server are available on several mirrors as well.
+Please refer to the list below for alternative locations.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Germany</strong><br>
+[<a href="http://ftp.halifax.rwth-aachen.de/lede/">HTTP</a>] [<a href="ftp://ftp.halifax.rwth-aachen.de/lede/">FTP</a>] [<a href="rsync://ftp.halifax.rwth-aachen.de/lede/">RSYNC</a>]<br>
+~Sponsored by <a href="http://www.rwth-aachen.de/">RWTH Aachen</a>~</p>
+</li>
+<li>
+<p><strong>Romania</strong><br>
+[<a href="http://mirrors.linux.ro/lede/downloads/">HTTP</a>] [<a href="ftp://mirrors.linux.ro/lede/downloads/">FTP</a>] [<a href="rsync://mirrors.linux.ro/lede/downloads/">RSYNC</a>]<br>
+~Sponsored by <a href="http://www.rcs-rds.ro">RCS&amp;RDS</a>~</p>
+</li>
+<li>
+<p><strong>France</strong><br>
+[<a href="http://lede-project.tetaneutral.net/">HTTP</a>] [<a href="rsync://lede-project.tetaneutral.net/downloads/">RSYNC</a>]<br>
+~Sponsored by <a href="http://tetaneutral.net/">tetaneutral.net</a>~</p>
+</li>
+<li>
+<p><strong>Netherlands</strong><br>
+[<a href="http://ftp.snt.utwente.nl/pub/software/lede/">HTTP</a>] [<a href="ftp://ftp.snt.utwente.nl/pub/software/lede/">FTP</a>]<br>
+~Sponsored by the <a href="https://www.utwente.nl/">SNT, University of Twente</a>~</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="how_to_mirror">How to mirror</h3>
+<div class="paragraph">
+<p>Please use <code>rsync://downloads.lede-project.org/downloads</code> to obtain a copy of
+the download repository.</p>
+</div>
+<div class="paragraph">
+<p>Syncing the downloads share every 12 to 24 hours hours is ideal. Once a mirror
+has been set up, feel free to announce it at <code>lede-adm@lists.lede-project.org</code>
+so that it can be published on this page.</p>
+</div>
+<div class="paragraph">
+<p>The data volume of the snapshots is roughly 35GB, we expect it to grow by
+30-40GB with each release. Due to current bandwidth constraints we kindly ask
+you to use something like <code>rsync --bwlimit 8000</code> when initially pulling the
+data.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sources">Sources</h3>
+<div class="paragraph">
+<p>Any source code archives fetched by the buildbots during the build process are
+available at <a href="http://sources.lede-project.org/" class="bare">http://sources.lede-project.org/</a></p>
+</div>
+</div>
+</div>
+</div>
+
+    </div>
+
+    <!-- End Main Content -->
+
+    <!-- Sidebar -->
+
+    <aside class="large-3 columns">
+        
+            <h4>Links</h4>
+<div class="panel">
+    <ul class="fa-ul">
+        <li><i class="fa-li fa fa-download" aria-hidden="true"></i><a href="https://downloads.lede-project.org/snapshots/targets/">Downloads</a></li>
+        <li><i class="fa-li fa fa-code-fork" aria-hidden="true"></i><a href="https://git.lede-project.org/">Git Repos</a></li>
+        <li><i class="fa-li fa fa-github" aria-hidden="true"></i><a href="https://github.com/lede-project">Github</a></li>
+        <li><i class="fa-li fa fa-archive" aria-hidden="true"></i><a href="https://sources.lede-project.org/">Source Archives</a></li>
+        <li><i class="fa-li fa fa-envelope" aria-hidden="true"></i><a href="http://lists.infradead.org/mailman/listinfo/lede-dev">Mailing List</a></li>
+        <li><i class="fa-li fa fa-twitter" aria-hidden="true"></i><a href="https://twitter.com/lede_project">Twitter</a></li>
+        <li><i class="fa-li fa fa-comment" aria-hidden="true"></i><a href="irc://irc.freenode.org/lede-dev">IRC</a></li>
+    </ul>
+</div>
+
+        
+    </aside>
+
+    <!-- End Sidebar -->
+</div>
+
+<!-- End Main Content and Sidebar -->
+
+
+<!-- Footer -->
+
+<footer class="row">
+    <div class="large-12 columns">
+        <hr/>
+        <div class="row">
+            <div class="large-12 columns">
+                <p>Last updated 2016-05-24 14:04:37</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="/lede-web/js/vendor/jquery.js"></script>
+<script src="/lede-web/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+
+    var doc = document.documentElement;
+    doc.setAttribute('data-useragent', navigator.userAgent);
+</script>
+</body>
+</html>

@@ -1,0 +1,429 @@
+<!doctype html>
+<!--[if IE 9]>
+<html class="lt-ie10" lang="en"> <![endif]-->
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Samba (smb)</title>
+
+
+    <meta name="description"
+          content="Linux Embedded Development Environment, an embedded Linux distribution that makes it easy for developers, system administrators or other Linux enthusiasts to build and customize software for embedded devices, especially wireless routers."/>
+
+    <link rel="stylesheet" href="/lede-web/css/foundation.css"/>
+    <link rel="stylesheet" href="/lede-web/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/lede-web/css/coderay.css"/>
+    <link rel="stylesheet" href="/lede-web/css/asciidoctor.css"/>
+    <link rel="stylesheet" href="/lede-web/css/lede.css"/>
+    <script src="/lede-web/js/vendor/modernizr.js"></script>
+    <script src="/lede-web/js/toc.js"></script>
+</head>
+<body>
+
+
+<!-- Nav Bar -->
+
+<nav class="top-bar" data-topbar>
+    <ul class="title-area">
+        <!-- Title Area -->
+        <li class="name">
+            <h1>
+                <a href="#">
+                    <img src="/lede-web/logo/logo_small.png"></img>
+                    <span>Samba (smb)</span>
+                </a>
+            </h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+    </ul>
+    <section class="top-bar-section">
+        <!-- Right Nav Section -->
+        <ul class="right">
+            <li><a href="/lede-web/index.html">Home</a></li>
+<li><a href="/lede-web/communication.html">Communication</a></li>
+<li><a href="/lede-web/rules.html">Rules</a></li>
+<li><a href="/lede-web/development.html">Development</a></li>
+<li><a href="/lede-web/todo.html">Todo</a></li>
+<li><a href="/lede-web/downloads.html">Downloads</a></li>
+<li class="active"><a href="/lede-web/docs/index.html">Documentation</a></li>
+<li><a href="/lede-web/about.html">About</a></li>
+
+        </ul>
+    </section>
+</nav>
+<!-- End Nav -->
+
+
+<!-- Main Page Content and Sidebar -->
+
+<div class="row">
+
+    <!-- Main Blog Content -->
+    <div class="large-9 columns" role="content">
+
+        <div class="sect1">
+<h2 id="samba_configuration">Samba configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Samba UCI configuration file is located at <strong><em>/etc/config/samba</em></strong>.</p>
+</div>
+<div class="sect2">
+<h3 id="common_options">Common Options</h3>
+<div class="paragraph">
+<p>The config section type <em>samba</em> determines values and options relevant to the overall operation of samba. The following table lists all available options, their default value and respectively a short characterization. See <a href="http://www.samba.org/samba/docs/man/manpages-3/smb.conf.5.html#idp58030944">smb.conf man page</a> for further details.</p>
+</div>
+<div class="paragraph">
+<p>These are the default settings for the common options:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'samba'
+	option 'name' 'OpenWrt'
+	option 'workgroup' 'OpenWrt'
+	option 'description' 'Samba on OpenWrt'
+	option 'charset' 'UTF-8'
+	option 'homes' '0'
+	option 'interface' 'loopback lan'</pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 11.1111%;">
+<col style="width: 11.1111%;">
+<col style="width: 11.1111%;">
+<col style="width: 11.1111%;">
+<col style="width: 11.1111%;">
+<col style="width: 44.4445%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Option</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>name</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hostname or OpenWrt</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the Server</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>workgroup</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hostname or OpenWrt</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the Workgroup</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>description</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Samba on hostname or OpenWrt</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description of the Server</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>charset</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">UTF-8</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Display charset &amp; unix charset</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>homes</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0, 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Share the user directory</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>interface</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">loopback lan</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Interfaces samba should listen on.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="sambashare">Sambashare</h3>
+<div class="paragraph">
+<p>The daemons are up and running and recheable via NetBIOS. Now you only need to configure the directories you intend to make accesible to users in your LAN. This example assumes you attached a USB harddisk to the USB-Port and <em>correctly</em> mounted a partition. You can now choose to share the partition as a whole, or just individual directories on it. For each entry you need to create an individual config <em>sambashare</em> section.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'sambashare'
+	option 'name' 'Shares'
+	option 'path' '/mnt/sda3'
+#       option 'users' 'sandra'
+	option 'guest_ok' 'yes'
+	option 'create_mask' '0700'
+	option 'dir_mask' '0700'
+	option 'read_only' 'yes'</pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 11.1111%;">
+<col style="width: 11.1111%;">
+<col style="width: 11.1111%;">
+<col style="width: 11.1111%;">
+<col style="width: 11.1111%;">
+<col style="width: 44.4445%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Option</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>name</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the entry. Will be shown in the filebrowser.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>path</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file path</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The complete path of the directory. <a href="http//www.samba.org/samba/docs/man/manpages-3/smb.conf.5.html#PATH">path</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>users</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">guest account or from global template</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">the samba-users allowed access to this entry; use <em>smbpasswd</em> to create a user-pwd combination! Several users can be specified, separated by a coma (ex : option <em>users</em> <em>root,nobody</em> ). Translated to <a href="http://www.samba.org/samba/docs/man/manpages-3/smb.conf.5.html#VALIDUSERS">valid users</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>read_only</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes or from global template</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no, yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no allows for read/write, else only read access is granted; (for rw, you also need to mount fs rw!). <a href="http://www.samba.org/samba/docs/man/manpages-3/smb.conf.5.html#READONLY">read only</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>guest_ok</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no or from global template</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no, yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies if you need to login via samba-username and password to access this share. <a href="http://www.samba.org/samba/docs/man/manpages-3/smb.conf.5.html#GUESTOK">guest ok</a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>create_mask</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0744 or from global template</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">chmod mask for files created (needs write access). <a href="http://www.samba.org/samba/docs/man/manpages-3/smb.conf.5.html#CREATEMASK">create mask</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dir_mask</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0755 or from global template</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">chmod mask for directories created (need write access). <a href="http://www.samba.org/samba/docs/man/manpages-3/smb.conf.5.html#DIRECTORYMASK">directory mask</a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="additional_configuration_options">Additional Configuration Options</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In addition to the UCI file (<em>/etc/config/samba</em>), modifications can be made to the <em>/etc/samba/smb.conf.template</em> file.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="configuration_examples">Configuration examples</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Samba can be configured at either share level access or user level access.  At share level access all users on the network can access the share, and all files are shared with all users.  At user level access a username and password are needed to access the share. By default Samba is configured for user level access.</p>
+</div>
+<div class="paragraph">
+<p>These configurations have proven to work for some:</p>
+</div>
+<div class="sect2">
+<h3 id="share_level_access">Share level access</h3>
+<div class="paragraph">
+<p>To set share level access change <em>security = user</em> to <em>security = share</em> in <em>/etc/samba/smb.conf.template</em>:</p>
+</div>
+<div class="paragraph">
+<p>Then add a share to <em>/etc/config/samba</em>. Make sure that <em>guest ok</em> is set to <em>yes</em></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'samba'
+	option 'name' 'lede'
+	option 'workgroup' 'WORKGROUP'
+	option 'description' 'lede'
+	option 'homes' '1'
+
+config 'sambashare'
+	option 'read_only' 'no'
+	option 'create_mask' '0700'
+	option 'dir_mask' '0700'
+	option 'name' 'name-of-share'
+	option 'path' '/path/of/share'
+	option 'guest_ok' 'yes'</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="user_level_access">User level access</h3>
+<div class="paragraph">
+<p>At user level access a username and password are needed to access the share.</p>
+</div>
+<div class="paragraph">
+<p>Steps:</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="1_add_user_to_system">1. Add user to system</h3>
+<div class="paragraph">
+<p>To access a samba share with user level access there must be a user added to the system. Edit <em>/etc/passwd</em> and add a line for the new user. Choose a user id (the first number in the line) of 1000 or higher that does not exist yet. Set the group identification number (the second number) to the same number as the user nobody. Copy the rest.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>root:0:0:root:/root:/bin/ash
+nobody:*:65534:65534:nobody:/var:/bin/false
+daemon:*:65534:65534:daemon:/var:/bin/false
+newuser:*:1000:65534:newuser:/var:/bin/false</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Note:</strong> keep in mind that the user(s) and group(s) utilized by Samba need to have the proper permissions for their shares, i.e. they need write access in order to write via smb.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="2_add_samba_password_to_user">2. Add samba password to user</h3>
+<div class="paragraph">
+<p><em>smbpasswd -a newuser</em></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="3_change_samba_config_to_accept_users_with_null_passwords">3. Change samba config to accept users with null passwords</h3>
+<div class="paragraph">
+<p>Edit <em>/etc/samba/smb.conf.template</em> and add <em>null passwords = yes</em>:</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="4_add_a_share">4. Add a share</h3>
+<div class="paragraph">
+<p>Then add a share to <em>/etc/config/samba</em>. Make shure that <em>guest ok</em> is set to <em>no</em></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'samba'
+	option 'name' 'lede'
+	option 'workgroup' 'WORKGROUP'
+	option 'description' 'lede'
+	option 'homes' '1'
+
+config 'sambashare'
+	option 'read_only' 'no'
+	option 'create_mask' '0700'
+	option 'dir_mask' '0700'
+	option 'name' 'name-of-share'
+	option 'path' '/path/of/share'
+	option 'guest_ok' 'no'</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+    </div>
+
+    <!-- End Main Content -->
+
+    <!-- Sidebar -->
+
+    <aside class="large-3 columns">
+        
+            <h4>Documents</h4>
+<div class="panel">
+    <div id="toc" class="toc">
+        <ul class="sectlevel0">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="config.html">Configuration</a></li>
+            <li><a href="ubus.html">uBus</a></li>
+            <li><a href="procd.html">Procd</a></li>
+            <li><a href="uci.html">UCI Document</a></li>
+            <ul class="sectlevel0">
+                <li><a href="uci_dnsmasq.html">DHCP</a></li>
+                <li><a href="uci_dropbear.html">Dropbear</a></li>
+                <li><a href="uci_firewall.html">Firewall</a></li>
+                <li><a href="uci_fstab.html">FSTab</a></li>
+                <li><a href="uci_net.html">Network</a></li>
+                <li><a href="uci_qos.html">QoS</a></li>
+                <li class="active"><a href="uci_samba.html">Samba</a></li>
+                <li><a href="uci_system.html">System</a></li>
+                <li><a href="uci_wireless.html">Wireless</a></li>
+            </ul>
+        </ul>
+    </div>
+</div>
+
+        
+    </aside>
+
+    <!-- End Sidebar -->
+</div>
+
+<!-- End Main Content and Sidebar -->
+
+
+<!-- Footer -->
+
+<footer class="row">
+    <div class="large-12 columns">
+        <hr/>
+        <div class="row">
+            <div class="large-12 columns">
+                <p>Last updated 2016-05-24 14:04:48</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="/lede-web/js/vendor/jquery.js"></script>
+<script src="/lede-web/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+
+    var doc = document.documentElement;
+    doc.setAttribute('data-useragent', navigator.userAgent);
+</script>
+</body>
+</html>

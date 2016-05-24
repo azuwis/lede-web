@@ -1,0 +1,2415 @@
+<!doctype html>
+<!--[if IE 9]>
+<html class="lt-ie10" lang="en"> <![endif]-->
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Firewall configuration</title>
+
+
+    <meta name="description"
+          content="Linux Embedded Development Environment, an embedded Linux distribution that makes it easy for developers, system administrators or other Linux enthusiasts to build and customize software for embedded devices, especially wireless routers."/>
+
+    <link rel="stylesheet" href="/lede-web/css/foundation.css"/>
+    <link rel="stylesheet" href="/lede-web/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/lede-web/css/coderay.css"/>
+    <link rel="stylesheet" href="/lede-web/css/asciidoctor.css"/>
+    <link rel="stylesheet" href="/lede-web/css/lede.css"/>
+    <script src="/lede-web/js/vendor/modernizr.js"></script>
+    <script src="/lede-web/js/toc.js"></script>
+</head>
+<body>
+
+
+<!-- Nav Bar -->
+
+<nav class="top-bar" data-topbar>
+    <ul class="title-area">
+        <!-- Title Area -->
+        <li class="name">
+            <h1>
+                <a href="#">
+                    <img src="/lede-web/logo/logo_small.png"></img>
+                    <span>Firewall configuration</span>
+                </a>
+            </h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+    </ul>
+    <section class="top-bar-section">
+        <!-- Right Nav Section -->
+        <ul class="right">
+            <li><a href="/lede-web/index.html">Home</a></li>
+<li><a href="/lede-web/communication.html">Communication</a></li>
+<li><a href="/lede-web/rules.html">Rules</a></li>
+<li><a href="/lede-web/development.html">Development</a></li>
+<li><a href="/lede-web/todo.html">Todo</a></li>
+<li><a href="/lede-web/downloads.html">Downloads</a></li>
+<li class="active"><a href="/lede-web/docs/index.html">Documentation</a></li>
+<li><a href="/lede-web/about.html">About</a></li>
+
+        </ul>
+    </section>
+</nav>
+<!-- End Nav -->
+
+
+<!-- Main Page Content and Sidebar -->
+
+<div class="row">
+
+    <!-- Main Blog Content -->
+    <div class="large-9 columns" role="content">
+
+        <div class="sect1">
+<h2 id="firewall_configuration">Firewall Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The firewall configuration located in <strong><em>/etc/config/firewall</em></strong>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="overview">Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>OpenWrt relies on netfilter for packet filtering, NAT and mangling. The UCI Firewall provides a configuration interface that abstracts from the <strong>iptables</strong> system to provide a simplified configuration model that is fit for most regular purposes while enabling the user to supply needed iptables rules on their own when needed.</p>
+</div>
+<div class="paragraph">
+<p>UCI Firewall maps two or more <em>Interfaces</em> together into <em>Zones</em> that are used to describe default rules for a given interface, forwarding rules between interfaces and extra rules. In the config file, default rules come <em>first</em> but they are the last to take effect. The netfilter system is a chained processing filter where packets pass through various rules. The first rule that matches is executed, often leading to another rule-chain until a packet hits either ACCEPT or DROP/REJECT. Such an outcome is final, therefore the default rules take effect last and the most specific rule takes effect first. Zones are also used to configure <em>masquerading</em> also known as NAT (network-address-translation) as well as port forwarding rules, which are more generally known as redirects.</p>
+</div>
+<div class="paragraph">
+<p>Zones must always be mapped onto one or more Interfaces which ultimately map onto physical devices; therefore zones cannot be used to specify networks (subnets) and the generated iptables rules operate on interfaces exclusively. The difference is that interfaces can be used to reach destinations not part of their own subnet, when their subnet contains another gateway. Usually however, forwarding is done between lan and wan interfaces, with the router serving as <em>edge</em> gateway to the internet. The default configuration of UCI Firewall provides for such a common setup.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="requirements">Requirements</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><strong><em>firewall</em></strong> (or  <strong><em>firewall3</em></strong>) and its dependencies (<em>pre-installed</em>)</p>
+</li>
+<li>
+<p><strong><em>iptables</em></strong> (<em>pre-installed</em>)</p>
+</li>
+<li>
+<p><strong><em>iptables-mod-?</em></strong> (<em>optional</em>) - depends on what speial feature is required</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sections">Sections</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Below is an overview of the section types that may be defined in the firewall configuration.
+A minimal firewall configuration for a router usually consists of one <em>defaults</em> section, at least two <em>zones</em> (<em>lan</em> and <em>wan</em>) and one <em>forwarding</em> to allow traffic from <em>lan</em> to <em>wan</em>.</p>
+</div>
+<div class="sect2">
+<h3 id="defaults">Defaults</h3>
+<div class="paragraph">
+<p>The <em>defaults</em> section declares global firewall settings which do not belong to specific zones.
+The following options are defined within this section:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>input</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>REJECT</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Set policy for the <em>INPUT</em> chain of the <em>filter</em> table.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>output</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>REJECT</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Set policy for the <em>OUTPUT</em> chain of the <em>filter</em> table.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>forward</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>REJECT</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Set policy for the <em>FORWARD</em> chain of the <em>filter</em> table.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>drop_invalid</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Drop invalid packets (e.g. not matching any active connection).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>synflood_protect</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enable SYN flood protection.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>synflood_rate</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>25</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Set rate limit (packets/second) for SYN packets above which the traffic is considered a flood.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>synflood_burst</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>50</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Set burst limit for SYN packets above which the traffic is considered a flood if it exceeds the allowed rate.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>tcp_syncookies</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enable the use of SYN cookies.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>tcp_ecn</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>tcp_westwood</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>tcp_window_scaling</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enable TCP window scaling.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>accept_redirects</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>accept_source_route</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>custom_chains</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>disable_ipv6</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Disable IPv6 firewall rules.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="zones">Zones</h3>
+<div class="paragraph">
+<p>A <em>zone</em> section groups one or more <em>interfaces</em> and serves as a <em>source</em> or <em>destination</em> for <em>forwardings</em>, <em>rules</em> and <em>redirects</em>. Masquerading (NAT) of outgoing traffic is controlled on a per-zone basis. Note that masquerading is defined on the <em>outgoing</em> interface.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>INPUT rules for a zone describe what happens to traffic trying to reach the router itself through an interface in that zone.</p>
+</li>
+<li>
+<p>OUTPUT rules for a zone describe what happens to traffic originating from the router itself going through an interface in that zone.</p>
+</li>
+<li>
+<p>FORWARD rules for a zone describe what happens to traffic passing between different interfaces in that zone.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The options below are defined within <em>zone</em> sections:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>name</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">zone name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unique zone name. 11 characters is the maximum working firewall zone name length.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>network</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List of interfaces attached to this zone. If omitted and neither extra* options, subnets or devices are given, the value of <em>name</em> is used by default. Alias interfaces defined in the network config cannot be used as valid <em>standalone</em> networks.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>masq</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies whether <em>outgoing</em> zone traffic should be masqueraded - this is typically enabled on the <em>wan</em> zone</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>masq_src</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of subnets</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0.0.0.0/0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limit masquerading to the given source subnets. Negation is possible by prefixing the subnet with <em>!</em>. multiple subnets are allowed.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>masq_dest</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of subnets</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0.0.0.0/0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limit masquerading to the given destination subnets. Negation is possible by prefixing the subnet with <em>!</em>. multiple subnets are allowed.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>conntrack</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em> if masquerading is used, <em>0</em> otherwise</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Force connection tracking for this zone</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>mtu_fix</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enable MSS clamping for <em>outgoing</em> zone traffic</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>input</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>DROP</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default policy (<em>ACCEPT</em>, <em>REJECT</em>, <em>DROP</em>) for <em>incoming</em> zone traffic</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>forward</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>DROP</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default policy (<em>ACCEPT</em>, <em>REJECT</em>, <em>DROP</em>) for <em>forwarded</em> zone traffic</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>output</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>DROP</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default policy (<em>ACCEPT</em>, <em>REJECT</em>, <em>DROP</em>) for <em>outgoing</em> zone traffic</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>family</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>any</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Protocol family (<em>ipv4</em>, <em>ipv6</em> or <em>any</em>) to generate iptables rules for</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>log</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Create log rules for rejected and dropped traffic in this zone</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>log_limit</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>10/minute</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limits the amount of log messages per interval</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>device</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List of raw network device names attached to this zone, e.g. <em>ppp+</em> to match any PPP interface</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>subnet</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List of IP subnets attached to this zone</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>extra</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Extra arguments passed directly to iptables. Note that these options are passed to both source and destination classification rules, therfore direction-specific options like <em>--dport</em> should not be used here - in this case the <em>extra_src</em> and <em>extra_dest</em> options should be used instead</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>extra_src</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Value of 'extra'</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Extra arguments passed directly to iptables for source classification rules</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>extra_dest</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Value of 'extra'</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Extra arguments passed directly to iptables for destination classification rules</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="forwardings">Forwardings</h3>
+<div class="paragraph">
+<p>The <em>forwarding</em> sections control the traffic flow between <em>zones</em> and may enable MSS clamping for specific directions. Only one direction is covered by a <em>forwarding</em> rule. To allow bidirectional traffic flows between two <em>zones</em>, two <em>forwardings</em> are required, with <em>src</em> and <em>dest</em> reversed in each.</p>
+</div>
+<div class="paragraph">
+<p>Below is a listing of allowed option within <em>forwardings</em>:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>src</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">zone name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the traffic <em>source zone</em>. Must refer to one of the defined <em>zone names</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dest</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">zone name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the traffic <em>destination zone</em>. Must refer to one of the defined <em>zone names</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>family</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>any</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Protocol family (<em>ipv4</em>, <em>ipv6</em> or <em>any</em>) to generate iptables rules for</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+The <em>iptables</em> rules generated for this section rely on the <em>state match</em> which needs connection tracking to work.
+At least one of the <em>src</em> or <em>dest</em> zones needs to have <em>connection tracking</em> enabled through either the <em>masq</em> or the <em>conntrack</em> option.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="redirects">Redirects</h3>
+<div class="paragraph">
+<p>Port forwardings (DNAT) are defined by <em>redirect</em> sections. All <em>incoming</em> traffic on the specified <em>source zone</em> which matches the given rules will be directed to the specified internal host.</p>
+</div>
+<div class="paragraph">
+<p><em>Redirects are also commonly known as "port forwarding", and "virtual servers".</em></p>
+</div>
+<div class="paragraph">
+<p>Port ranges are specified as <em>start:stop</em>, for instance <em>6666:6670</em>.  This is similar to the iptables syntax.</p>
+</div>
+<div class="paragraph">
+<p>The options below are valid for <em>redirects</em>:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>src</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">zone name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes for <em>DNAT</em> target</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the traffic <em>source zone</em>. Must refer to one of the defined <em>zone names</em>. For typical port forwards this usually is <em>wan</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>src_ip</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ip address</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Match incoming traffic from the specified <em>source ip address</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>src_dip</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ip address</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes for <em>SNAT</em> target</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">For <em>DNAT</em>, match incoming traffic directed at the given <em>destination ip address</em>. For <em>SNAT</em> rewrite the <em>source address</em> to the given address.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>src_mac</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mac address</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Match incoming traffic from the specified <em>mac address</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>src_port</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">port or range</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Match incoming traffic originating from the given <em>source port or port range</em> on the client host</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>src_dport</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">port or range</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">For <em>DNAT</em>, match incoming traffic directed at the given <em>destination port or port range</em> on this host. For <em>SNAT</em> rewrite the <em>source ports</em> to the given value.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>proto</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">protocol name or number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>tcpudp</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Match incoming traffic using the given <em>protocol</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dest</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">zone name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes for <em>SNAT</em> target</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the traffic <em>destination zone</em>. Must refer to one of the defined <em>zone names</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dest_ip</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ip address</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes for <em>DNAT</em> target</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">For <em>DNAT</em>, redirect matched incoming traffic to the specified internal host. For <em>SNAT</em>, match traffic directed at the given address. For <em>DNAT</em> if the <em>dest_ip</em> value matches the local ip addresses of the router, as shown in the <em>ifconfig</em>, then the rule is translated in a DNAT + input <em>accept</em> rule. Otherwise it is a DNAT + forward rule</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dest_port</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">port or range</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">For <em>DNAT</em>, redirect matched incoming traffic to the given port on the internal host. For <em>SNAT</em>, match traffic directed at the given ports. Only a single port or range can be specified, not disparate ports as with Rules (below)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ipset</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specified, match traffic against the given ipset. The match can be inverted by prefixing the value with an exclamation mark</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>mark</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specified, match traffic against the given firewall mark, e.g. <em>0xFF</em> to match mark 255 or <em>0x0/0x1</em> to match any even mark value. The match can be inverted by prefixing the value with an exclamation mark, e.g. <em>!0x10</em> to match all but mark #16.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>start_date</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">date (<em>yyyy-mm-dd</em>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(always)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specifed, only match traffic after the given date (inclusive).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>stop_date</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">date (<em>yyyy-mm-dd</em>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(always)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specified, only match traffic before the given date (inclusive).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>start_time</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">time (<em>hh:mm:ss</em>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(always)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specified, only match traffic after the given time of day (inclusive).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>stop_time</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">time (<em>hh:mm:ss</em>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(always)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specified, only match traffic before the given time of day (inclusive).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>weekdays</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of weekdays</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(always)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specified, only match traffic during the given week days, e.g. <em>sun mon thu fri</em> to only match on sundays, mondays, thursdays and fridays. The list can be inverted by prefixing it with an exclamation mark, e.g. <em>! sat sun</em> to always match but on saturdays and sundays.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>monthdays</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of dates</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(always)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specified, only match traffic during the given days of the month, e.g. <em>2 5 30</em> to only match on every 2nd, 5th and 30rd day of the month. The list can be inverted by prefixing it with an exclamation mark, e.g. <em>! 31</em> to always match but on the 31st of the month.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>utc_time</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Treat all given time values as UTC time instead of local time.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>target</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>DNAT</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NAT target (<em>DNAT</em> or <em>SNAT</em>) to use when generating the rule</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>family</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>any</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Protocol family (<em>ipv4</em>, <em>ipv6</em> or <em>any</em>) to generate iptables rules for.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>reflection</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Activate NAT reflection for this redirect - applicable to <em>DNAT</em> targets.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>reflection_src</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>internal</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The source address to use for NAT-reflected packets if <em>reflection</em> is <em>1</em>. This can be <em>internal</em> or <em>external</em>, specifying which interface’s address to use. Applicable to <em>DNAT</em> targets.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>limit</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maximum average matching rate; specified as a number, with an optional <em>/second</em>, <em>/minute</em>, <em>/hour</em> or <em>/day</em> suffix. Examples: <em>3/second</em>, <em>3/sec</em> or <em>3/s</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>limit_burst</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>5</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maximum initial number of packets to match, allowing a short-term average above <em>limit</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>extra</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Extra arguments to pass to iptables. Useful mainly to specify additional match options, such as <em>-m policy %%--%%dir in</em> for IPsec.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>enabled</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em> or <em>yes</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enable the redirect rule or not.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="rules">Rules</h3>
+<div class="paragraph">
+<p>Sections of the type <em>rule</em> can be used to define basic accept or reject rules to allow or restrict access to specific ports or hosts.</p>
+</div>
+<div class="paragraph">
+<p>The rules are defined as follows:
+* If <em>src</em> and <em>dest</em> are given, the rule matches <em>forwarded</em> traffic
+* If only <em>src</em> is given, the rule matches <em>incoming</em> traffic
+* If only <em>dest</em> is given, the rule matches <em>outgoing</em> traffic
+* If neither <em>src</em> nor <em>dest</em> are given, the rule defaults to an <em>outgoing</em> traffic rule</p>
+</div>
+<div class="paragraph">
+<p>Port ranges are specified as <em>start:stop</em>, for instance <em>6666:6670</em>. This is similar to the iptables syntax.</p>
+</div>
+<div class="paragraph">
+<p>Valid options for this section are:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>src</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">zone name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the traffic <em>source zone</em>. Must refer to one of the defined <em>zone names</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>src_ip</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ip address</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Match incoming traffic from the specified <em>source ip address</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>src_mac</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mac address</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Match incoming traffic from the specified <em>mac address</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>src_port</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">port or range</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Match incoming traffic from the specified <em>source port</em> or <em>port range</em>, if relevant <em>proto</em> is specified. Multiple ports can be specified like <em>80 443 465</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>proto</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">protocol name or number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>tcpudp</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Match incoming traffic using the given <em>protocol</em>. Can be one of <em>tcp</em>, <em>udp</em>, <em>tcpudp</em>, <em>udplite</em>, <em>icmp</em>, <em>esp</em>, <em>ah</em>, <em>sctp</em>, or <em>all</em> or it can be a numeric value. A protocol name from <em>/etc/protocols</em> is also allowed. The number 0 is equivalent to <em>all</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>icmp_type</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of type names or numbers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">any</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">For <em>protocol</em> <em>icmp</em> select specific icmp types to match. Values can be either exact icmp type numbers or type names (see below).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dest</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">zone name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the traffic <em>destination zone</em>. Must refer to one of the defined <em>zone names</em>, or * for any zone. If specified, the rule applies to <em>forwarded</em> traffic; otherwise, it is treated as <em>input</em> rule.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dest_ip</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ip address</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Match incoming traffic directed to the specified <em>destination ip address</em>. With no dest zone, this is treated as an input rule!</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dest_port</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">port or range</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Match incoming traffic directed at the given <em>destination port or port range</em>, if relevant <em>proto</em> is specified. Multiple ports can be specified like <em>80 443 465</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ipset</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specified, match traffic against the given ipset. The match can be inverted by prefixing the value with an exclamation mark</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>mark</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mark/mask</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specified, match traffic against the given firewall mark, e.g. <em>0xFF</em> to match mark 255 or <em>0x0/0x1</em> to match any even mark value. The match can be inverted by prefixing the value with an exclamation mark, e.g. <em>!0x10</em> to match all but mark #16.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>start_date</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">date (<em>yyyy-mm-dd</em>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(always)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specifed, only match traffic after the given date (inclusive).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>stop_date</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">date (<em>yyyy-mm-dd</em>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(always)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specified, only match traffic before the given date (inclusive).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>start_time</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">time (<em>hh:mm:ss</em>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(always)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specified, only match traffic after the given time of day (inclusive).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>stop_time</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">time (<em>hh:mm:ss</em>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(always)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specified, only match traffic before the given time of day (inclusive).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>weekdays</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of weekdays</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(always)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specified, only match traffic during the given week days, e.g. <em>sun mon thu fri</em> to only match on sundays, mondays, thursdays and fridays. The list can be inverted by prefixing it with an exclamation mark, e.g. <em>! sat sun</em> to always match but on saturdays and sundays.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>monthdays</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of dates</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(always)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specified, only match traffic during the given days of the month, e.g. <em>2 5 30</em> to only match on every 2nd, 5th and 30rd day of the month. The list can be inverted by prefixing it with an exclamation mark, e.g. <em>! 31</em> to always match but on the 31st of the month.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>utc_time</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Treat all given time values as UTC time instead of local time.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>target</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>DROP</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Firewall action (<em>ACCEPT</em>, <em>REJECT</em>, <em>DROP</em>, <em>MARK</em>, <em>NOTRACK</em>) for matched traffic</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>set_mark</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mark/mask</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes for target <em>MARK</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Zeroes out the bits given by mask and ORs value into the packet mark. If mask is omitted, 0xFFFFFFFF is assumed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>set_xmark</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Zeroes out the bits given by mask and XORs value into the packet mark. If mask is omitted, 0xFFFFFFFF is assumed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>family</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>any</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Protocol family (<em>ipv4</em>, <em>ipv6</em> or <em>any</em>) to generate iptables rules for.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>limit</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maximum average matching rate; specified as a number, with an optional <em>/second</em>, <em>/minute</em>, <em>/hour</em> or <em>/day</em> suffix. Examples: <em>3/minute</em>, <em>3/min</em> or <em>3/m</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>limit_burst</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>5</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maximum initial number of packets to match, allowing a short-term average above <em>limit</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>extra</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Extra arguments to pass to iptables. Useful mainly to specify additional match options, such as <em>-m policy %%--%%dir in</em> for IPsec.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>enabled</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enable or disable rule.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Available icmp type names for <em>icmp_type</em>:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><em>address-mask-reply</em></th>
+<th class="tableblock halign-left valign-top"><em>host-redirect</em></th>
+<th class="tableblock halign-left valign-top"><em>pong</em></th>
+<th class="tableblock halign-left valign-top"><em>time-exceeded</em></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>address-mask-request</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>host-unknown</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>port-unreachable</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>timestamp-reply</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>any</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>host-unreachable</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>precedence-cutoff</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>timestamp-request</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>communication-prohibited</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ip-header-bad</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>protocol-unreachable</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>TOS-host-redirect</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>destination-unreachable</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>network-prohibited</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>redirect</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>TOS-host-unreachable</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>echo-reply</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>network-redirect</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>required-option-missing</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>TOS-network-redirect</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>echo-request</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>network-unknown</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>router-advertisement</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>TOS-network-unreachable</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>fragmentation-needed</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>network-unreachable</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>router-solicitation</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ttl-exceeded</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>host-precedence-violation</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>parameter-problem</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>source-quench</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ttl-zero-during-reassembly</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>host-prohibited</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ping</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>source-route-failed</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ttl-zero-during-transit</em></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="includes">Includes</h3>
+<div class="paragraph">
+<p>It is possible to include custom firewall scripts by specifying one or more <em>include</em> sections in the firewall configuration.</p>
+</div>
+<div class="paragraph">
+<p>There is only one possible parameter for <em>includes</em>:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>enabled</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows to disable the corresponding include without having to delete the section</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>type</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>script</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the type of the include, can be <em>script</em> for traditional shell script includes or <em>restore</em> for plain files in <em>iptables-restore</em> format</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>path</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>/etc/firewall.user</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies a shell script to execute on boot or firewall restarts</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>family</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>any</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the address family (<em>ipv4</em>, <em>ipv6</em> or <em>any</em>) for which the include is called</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>reload</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies whether the include should be called on reload - this is only needed if the include injects rules into internal chains</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Includes of type <em>script</em> may contain arbitary commands, for example advanced iptables rules or tc commands required for traffic shaping.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+Since custom iptables rules are meant to be more specific than the generic ones, you must make sure to use <em>-I</em> (insert) instead of <em>-A</em> (append) so that the rules appear <strong>before</strong> the default rules.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ip_sets">IP Sets</h3>
+<div class="paragraph">
+<p>The UCI firewall version 3 supports referencing or creating <a href="http://ipset.netfilter.org/">ipsets</a> to simplify matching of
+huge address or port lists without the need for creating one rule per item to match,</p>
+</div>
+<div class="paragraph">
+<p>The following options are defined for <em>ipsets</em>:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>enabled</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows to disable the declaration fo the ipset without the need to delete the section</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>external</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If the <em>external</em> option is set to a name, the firewall will simply reference an already existing ipset pointed to by the name. If the <em>external</em> option is unset, the firewall will create the ipset on start and destroy it on stop</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>name</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes if <em>external</em> is unset \\ no if <em>external</em> is set</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em> if <em>external</em> is unset \\ value of <em>external</em> if <em>external</em> is set</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the firewall internal name of the ipset which is used to reference the set in rules or redirects</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>family</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ipv4</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Protocol family (<em>ipv4</em> or <em>ipv6</em>) to create ipset for. Only applicable to storage types <em>hash</em> and <em>list</em>, the <em>bitmap</em> type implies <em>ipv4</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>storage</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>varies</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the storage method (<em>bitmap</em>, <em>hash</em> or <em>list</em>) used by the ipset, the default varies depending on the used datatypes (see <em>match</em> option below). In most cases the storage method can be automatically inferred from the datatype combination but in some cases multiple choices are possible (e.g. <em>bitmap:ip</em> vs. <em>hash:ip</em>).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>match</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of direction/type tuples</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the matched data types (<em>ip</em>, <em>port</em>, <em>mac</em>, <em>net</em> or <em>set</em>) and their direction (<em>src</em> or <em>dest</em>). The direction is joined with the datatype by an underscore to form a tuple, e.g. <em>src_port</em> to match source ports or <em>dest_net</em> to match destination CIDR ranges.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>iprange</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IP range</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes for storage type <em>bitmap</em> with datatype <em>ip</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the IP range to cover, see ipset. Only applicable to the <em>hash</em> storage type.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>portrange</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Port range</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes for storage type <em>bitmap</em> with datatype <em>port</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the port range to cover, see ipset. Only applicable to the <em>hash</em> storage type.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>netmask</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>32</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If specified, network addresses will be stored in the set instead of IP host addresses. Value must be between <em>1</em> and <em>32</em>, see ipset. Only applicable to the <em>bitmap</em> storage type with match <em>ip</em> or the <em>hash</em> storage type with match <em>ip</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>maxelem</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>65536</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limits the number of items that can be added to the set, only applicable to the <em>hash</em> and <em>list</em> storage types.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>hashsize</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1024</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the initial hash size of the set, only applicable to the <em>hash</em> storage type.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>timeout</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the default timeout for entries added to the set. A value of <em>0</em> means no timeout.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="possible_storage_match_combinations">Possible Storage / Match Combinations</h3>
+<div class="paragraph">
+<p>The table below outlines the possible combinations of storage methods and matched datatypes as well as the usable IP address family.
+The order of the datatype matches is significant.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Family</th>
+<th class="tableblock halign-left valign-top">Storage</th>
+<th class="tableblock halign-left valign-top">Match</th>
+<th class="tableblock halign-left valign-top">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ipv4</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>bitmap</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ip</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requries <em>iprange</em> option</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ipv4</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>bitmap</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ip mac</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requires <em>iprange</em> option</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ipv4</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>bitmap</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>port</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requires <em>portrange</em> option</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>any</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>hash</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ip</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>any</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>hash</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>net</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>any</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>hash</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ip port</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>any</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>hash</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>net port</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>any</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>hash</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ip port ip</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>any</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>hash</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ip port net</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>list</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>set</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Meta type to create a set-of-sets</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ipv6_notes">IPv6 notes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>As described above, the option <em>family</em> is used for distinguishing between IPv4, IPv6 and both protocols. However the family is inferred automatically if IPv6 addresses are used, the following is automatically treated as an IPv6 only rule.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config rule
+	option src wan
+	option src_ip fdca:f00:ba3::/64
+	option target ACCEPT</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Similar, such a rule is detected as IPv4 only.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config rule
+	option src wan
+	option dest_ip 88.77.66.55
+	option target REJECT</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Rules without IP addresses are automatically added to iptables and ip6tables, unless overridden by the family option.
+Redirect rules (portforwards) are always IPv4 (for now) since there is no IPv6 DNAT support (yet).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples">Examples</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="opening_ports">Opening ports</h3>
+<div class="paragraph">
+<p>The default configuration accepts all LAN traffic, but blocks all incoming WAN traffic on ports not currently used for connections or NAT. To open a port for a service, add a <em>rule</em> section:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config rule
+	option src              wan
+	option dest_port        22
+	option target           ACCEPT
+	option proto            tcp</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example enables machines on the internet to use SSH to access your router.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="opening_ports_for_selected_subnet_host">Opening ports for selected subnet/host</h3>
+<div class="paragraph">
+<p>If you want to permit access to one host or subnet you should describe <em>src_ip</em> field:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config rule
+	option src              wan
+	option src_ip           '12.34.56.64/28'
+	option dest_port        22
+	option target           ACCEPT
+	option proto            tcp</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example enables ssh access to the host from the entire <em>12.34.56.64/28</em> subnet.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="port_forwarding_for_ipv4_destination_nat_dnat">Port forwarding for IPv4 (Destination NAT/DNAT)</h3>
+<div class="paragraph">
+<p>This example forwards http (but not HTTPS) traffic to the webserver running on 192.168.1.10:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config redirect
+	option src       wan
+	option src_dport 80
+	option proto     tcp
+	option dest      lan
+	option dest_ip   192.168.1.10</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This other example forwards one arbitrary port that you define to a box running ssh.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config redirect
+	option src       wan
+	option src_dport 5555
+	option proto     tcp
+	option dest      lan
+	option dest_ip   192.168.1.100
+	option dest_port 22</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="stateful_firewall_without_nat">Stateful firewall without NAT</h3>
+<div class="paragraph">
+<p>If your LAN is running with public IP addresses, then you definitely don&#8217;t want NAT (masquerading). But you may still want to run a stateful firewall on the router, so that machines on the LAN are not reachable from the Internet.</p>
+</div>
+<div class="paragraph">
+<p>To do this, just add the <code>conntrack</code> option to the WAN zone:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config zone
+	option name             wan
+	list   network          'wan'
+	list   network          'wan6'
+	option input            REJECT
+	option output           ACCEPT
+	option forward          REJECT
+	option masq             0
+	option mtu_fix          1
+	option conntrack        1</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="dnat_snat_redirects_and_forwarding_combination">DNAT/SNAT redirects and forwarding combination</h3>
+<div class="paragraph">
+<p>Given a couple of redirect (DNAT and SNAT, like to redirect the traffic from an host to and from a specific ip address) such as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config redirect
+	option name     'icmp DNAT'
+	option src      'wan'
+	option src_dip   '1.2.3.4'
+	option proto    'icmp'
+	option dest     'dmz'
+	option dest_ip  '192.168.1.79'
+	option target   'DNAT'
+
+config redirect
+	option name     'icmp SNAT'
+	option src      'dmz'
+	option src_ip   '192.168.1.79'
+	option src_dip  '1.2.3.4'
+	option proto    'icmp'
+	option dest     'wan'
+	option target   'SNAT'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Someone could ask "<em>Ok, the packet source or destination is changed, but still has to be forwarded towards the right network interface to reach the endpoint</em>". So the administrator of the device could wonder of adding additional forwarding rules but no, it is not needed. The forwarding rules are added by the firewall appliance itself.</p>
+</div>
+<div class="paragraph">
+<p>The same applies to the masquerading, the rules are applied <em>before</em> the global masquerading (if a masquerading is set), therefore they will not be overridden (at least the SNAT) by the masquerading mechanism.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="port_accept_for_ipv6">Port accept for IPv6</h3>
+<div class="paragraph">
+<p>To open port 80 so that a local webserver at <em>2001:db8:42::1337</em> can be reached from the Internet:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config rule
+	option src       wan
+	option proto     tcp
+	option dest      lan
+	option dest_ip   2001:db8:42::1337
+	option dest_port 80
+	option family    ipv6
+	option target    ACCEPT</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To open SSH access to all IPv6 hosts in the local network:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config rule
+	option src       wan
+	option proto     tcp
+	option dest      lan
+	option dest_port 22
+	option family    ipv6
+	option target    ACCEPT</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To open all TCP/UDP port between 1024 and 65535 towards the local IPv6 network:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config rule
+	option src       wan
+	option proto     tcpudp
+	option dest      lan
+	option dest_port 1024:65535
+	option family    ipv6
+	option target    ACCEPT</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="source_nat_snat">Source NAT (SNAT)</h3>
+<div class="paragraph">
+<p>Source NAT changes an outgoing packet so that it looks as though the OpenWrt system is the source of the packet.</p>
+</div>
+<div class="paragraph">
+<p>Define source NAT for UDP and TCP traffic directed to port 123 originating from the host with the IP address 10.55.34.85.
+The source address is rewritten to 63.240.161.99:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config redirect
+	option src              lan
+	option dest             wan
+	option src_ip           10.55.34.85
+	option src_dip          63.240.161.99
+	option dest_port        123
+	option target           SNAT</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When used alone, Source NAT is used to restrict a computer&#8217;s access to the internet, but allow it to access a few services by forwarding what appear to be a few local services, e.g. NTP, to the internet.  While DNAT hides the local network from the internet, SNAT hides the internet from the local network.</p>
+</div>
+<div class="paragraph">
+<p>Source NAT and destination NAT are combined and used dynamically in IP masquerading to make computers with private (192.168.x.x, etc.) IP address appear on the internet with the OpenWrt router&#8217;s public WAN ip address.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="block_access_to_the_internet_using_mac">Block access to the Internet using MAC</h3>
+<div class="paragraph">
+<p>The following rule blocks all connection attempts from the client to the Internet.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config rule
+	option src              lan
+	option dest             wan
+	option src_mac          00:00:00:00:00:00
+	option target           REJECT</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="block_access_to_the_internet_for_specific_ip_on_certain_times">Block access to the Internet for specific IP on certain times</h3>
+<div class="paragraph">
+<p>The following rule blocks all connection attempts to the internet from 192.168.1.27 on weekdays between 21:00pm and 09:00am (times are specified in UTC unless the --kerneltz switch is used).</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+The package <em>iptables-mod-ipopt</em> must be installed to provide <em>xt_time</em>.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config rule
+	option src              lan
+	option dest             wan
+	option src_ip           192.168.1.27
+	option proto            all
+	option start_time       21:00
+	option stop_time        09:00
+	option weekdays         'mon tue wed thu fri'
+	option target           REJECT</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="restricted_forwarding_rule">Restricted forwarding rule</h3>
+<div class="paragraph">
+<p>The example below creates a <em>forward</em> rule rejecting traffic from lan to wan on the ports 1000-1100.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config rule
+	option src              lan
+	option dest             wan
+	option dest_port        1000-1100
+	option proto            tcpudp
+	option target           REJECT</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="simple_output_rule">Simple output rule</h3>
+<div class="paragraph">
+<p>The example below creates an <em>output</em> rule which prevents the router from pinging the address <em>8.8.8.8</em>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config rule
+	option dest             wan
+	option dest_ip          8.8.8.8
+	option proto            icmp
+	option target           REJECT</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="transparent_proxy_rule_same_host">Transparent proxy rule (same host)</h3>
+<div class="paragraph">
+<p>The rule below redirects all outgoing HTTP traffic from <em>lan</em> through a proxy server listening at port 3128 on the router itself.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config redirect
+	option src              lan
+	option proto            tcp
+	option src_dport        80
+	option dest_port        3128
+	option dest_ip          192.168.1.1</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="transparent_proxy_rule_external">Transparent proxy rule (external)</h3>
+<div class="paragraph">
+<p>The following rule redirects all outgoing HTTP traffic from <em>lan</em> through an external proxy at 192.168.1.100 listening on port 3128.
+It assumes the <em>lan</em> address to be 192.168.1.1 - this is needed to masquerade redirected traffic towards the proxy.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config redirect
+	option src              lan
+	option proto            tcp
+	option src_ip           !192.168.1.100
+	option src_dport        80
+	option dest_ip          192.168.1.100
+	option dest_port        3128
+	option target           DNAT
+
+config redirect
+	option dest             lan
+	option proto            tcp
+	option src_dip          192.168.1.1
+	option dest_ip          192.168.1.100
+	option dest_port        3128
+	option target           SNAT</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ipsec_passthrough">IPSec passthrough</h3>
+<div class="paragraph">
+<p>This example enables proper forwarding of IPSec traffic through the wan.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># AH protocol
+config rule
+	option src              wan
+	option dest             lan
+	option proto            ah
+	option target           ACCEPT
+
+# ESP protocol
+config rule
+	option src              wan
+	option dest             lan
+	option proto            esp
+	option target           ACCEPT</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For some configurations you also have to open port 500/UDP.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># ISAKMP protocol
+config rule
+	option src              wan
+	option dest             lan
+	option proto            udp
+	option src_port         500
+	option dest_port        500
+	option target           ACCEPT</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="zone_declaration_for_semi_non_uci_interfaces_manually_listed_in_the_network_config_and_forwardings">Zone declaration for semi non-UCI interfaces, manually listed in the network config, and forwardings</h3>
+<div class="paragraph">
+<p>Scenario: having one or more vpn tunnels using openvpn,
+with the need of defining a zone to forward the traffic between the
+vpn interfaces and the lan.</p>
+</div>
+<div class="paragraph">
+<p>First list the interfaces in <strong>/etc/config/network</strong>,
+for example in the following way: (be careful on the limits of interface naming in terms of name length.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config interface 'tun0'
+	option ifname 'tun0'
+	option proto 'none'
+
+config interface 'tun1'
+	option ifname 'tun1'
+	option proto 'none'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then create the zone in <strong>/etc/config/firewall</strong>, for example one zone for all the vpn interfaces.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config zone
+	option name             vpn_tunnel
+	list   network          'tun0'
+	list   network          'tun1'
+	option input            ACCEPT
+#the traffic towards the router from the interface will be accepted
+#(as for the lan communications)
+	option output           ACCEPT
+#the traffic from the router to the interface will be accepted
+	option forward          REJECT
+#traffic from this zone to other zones is normally rejected</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then we want to communicate with the "lan" zone, therefore we need forwardings in both ways
+(from lan to wan and viceversa)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config forwarding
+	option src              lan
+	option dest             vpn_tunnel
+#if a packet from lan wants to go to the vpn_tunnel zone
+#let it pass
+
+config forwarding
+	option src              vpn_tunnel
+	option dest             lan
+#if a packet from vpn_tunnel wants to go to the lan zone
+#let it pass</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will create a lot of "automatic" iptables rules (because automatic scripting is not
+as efficient as raw iptable commands in /etc/firewall.user) but those rules will be more clear in the luci webinterface and also more readable for
+less expert users.</p>
+</div>
+<div class="paragraph">
+<p>In general remember that forwardings are relying how routing rules are defined, and afterwards which zones are
+defined on which interfaces.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="zone_declaration_for_non_uci_interfaces">Zone declaration for non-UCI interfaces</h3>
+<div class="paragraph">
+<p>This example declares a zone which maches any Linux network device whose name begins with "ppp".</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config zone
+	option name             example
+	option input            ACCEPT
+	option output           ACCEPT
+	option forward          REJECT
+	option device           'ppp+'</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="zone_declaration_for_a_specific_subnet_and_protocol">Zone declaration for a specific subnet and protocol</h3>
+<div class="paragraph">
+<p>This example declares a zone which maches any TCP stream in the <em>10.21.0.0/16</em> subnet.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config zone
+	option name             example
+	option input            ACCEPT
+	option output           ACCEPT
+	option forward          REJECT
+	option subnet           '10.21.0.0/16'
+	option extra            '-p tcp'</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="zone_declaration_for_a_specific_protocol_and_port">Zone declaration for a specific protocol and port</h3>
+<div class="paragraph">
+<p>This example declares a zone which maches any TCP stream from and to port <em>22</em>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config zone
+	option name             example
+	option input            ACCEPT
+	option output           ACCEPT
+	option forward          REJECT
+	option extra_src        '-p tcp --sport 22'
+	option extra_dest       '-p tcp --dport 22'</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="manual_iptables_rules">Manual iptables rules</h3>
+<div class="paragraph">
+<p>Traditional iptables rules, in the standard iptables unix command form, can be specified in an external file and included in the firewall config file. It is possible to include multiple files this way.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config include
+	option path /etc/firewall.user
+
+config include
+	option path /etc/firewall.vpn</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The syntax for the includes is Linux standard, and therefore different from UCI&#8217;s.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="firewall_management">Firewall management</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>After a configuration change, firewall rules are rebuilt by executing <em>/etc/init.d/firewall restart</em>; calling <em>/etc/init.d/firewall stop</em> will flush all rules and set the policies to ACCEPT on all standard chains. To manually start the firewall, call <em>/etc/init.d/firewall start</em>.</p>
+</div>
+<div class="paragraph">
+<p>The firewall can be permananently disabled by executing <em>/etc/init.d/firewall disable</em>.
+Note that <em>disable</em> does not flush the rules, so it might be required to issue a <em>stop</em> before.
+Use <em>enable</em> to activate the firewall again.</p>
+</div>
+<div class="sect2">
+<h3 id="temporarily_disable_firewall">Temporarily disable firewall</h3>
+<div class="paragraph">
+<p>Run <em>/etc/init.d/firewall stop</em> to flush all rules and set the policies to ACCEPT.
+To restart the firewall, run <em>/etc/init.d/firewall start</em>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="hotplug_hooks">Hotplug hooks</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In addition to <em>includes</em> it is possible to let the firewall execute <em>hotplug handlers</em> when interfaces are added to a zone or removed from it. This is useful to create rules for interfaces with dynamic ip configurations (dhcp, pppoe) on the fly.</p>
+</div>
+<div class="paragraph">
+<p>Each time an interface is added or removed from a zone, all scripts in the <em>/etc/hotplug.d/firewall/</em> directory are executed. Scripts must be named in the form <em>NN-name</em> with <em>NN</em> being a numeric index between <em>00</em> and <em>99</em>. The <em>name</em> can be freely choosen.</p>
+</div>
+<div class="paragraph">
+<p>Once a handler script is invoked, the information about the event is passed through the environment. The table below lists defined variables and their meaning.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Variable</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ACTION</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type of the event: <em>add</em> if an interface was added, <em>remove</em> if it was removed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ZONE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the firewall zone the interface was added to</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">INTERFACE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OpenWrt name of the interface, for example "lan" or "wan" - corresponds to the interfaces defined in <em>/etc/config/network</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DEVICE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The physical interface involved, for example "eth0" or "ppp0"</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="implications_of_drop_vs_reject">Implications of DROP vs. REJECT</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The decision whether to <em>drop</em> or to <em>reject</em> traffic should be done on a case-by-case basis. Many people see dropping traffic as a security advantage over rejecting it because it exposes less information to a potential attacker. While dropping slightly increases security, it can also complicate the debugging of network issues or cause unwanted side-effects on client programs.</p>
+</div>
+<div class="paragraph">
+<p>If traffic is <em>rejected</em>, the router will respond with an ICMP error message ("destination port unreachable") causing the connection attempt to fail immediately. This also means that for each connection attempt a certain amount of response traffic is generated. This can cause harm if the firewall is "attacked" with many simultaneous connection attempts; the resulting "backfire" of ICMP responses can clog up all available bandwidth and make the connection unusable (DoS).</p>
+</div>
+<div class="paragraph">
+<p>When connection attempts are <em>dropped</em> the client is not aware of the blocking and will continue to re-transmit its packets until the connection eventually times out. Depending on the way the client software is implemented, this could result in frozen or hanging programs that need to wait until a timeout occurs before they&#8217;re able to continue.</p>
+</div>
+<div class="paragraph">
+<p>Also there is an interesting article which that claims dropping connections doesnt make you any safer - <a href="http://www.chiark.greenend.org.uk/~peterb/network/drop-vs-reject">Drop versus Reject</a></p>
+</div>
+<div class="paragraph">
+<p><strong>DROP</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>less information is exposed</p>
+</li>
+<li>
+<p>less attack surface</p>
+</li>
+<li>
+<p>client software may not cope well with it (hangs until connection times out)</p>
+</li>
+<li>
+<p>may complicate network debugging (where was traffic dropped and why)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>REJECT</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>may expose information (like the ip at which traffic was actually blocked)</p>
+</li>
+<li>
+<p>client software can recover faster from rejected connection attempts</p>
+</li>
+<li>
+<p>network debugging easier (routing and firewall issues clearly distinguishable)</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="notes_on_connection_tracking">Notes on connection tracking</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="notrack">NOTRACK</h3>
+<div class="paragraph">
+<p>By default, the firewall will disable connection tracking for a zone if no masquerading is enabled. This is achieved by generating <em>NOTRACK</em> firewall rules matching all traffic passing via interfaces referenced by the firewall zone. The purpose of <em>NOTRACK</em> is to speed up routing and save memory by circumventing resource intensive connection tracking in cases where it is not needed. You can check if connection tracking is disabled by issuing <em>iptables -t raw -vnL</em>, it will list all rules, check for <em>NOTRACK</em> target.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<em>NOTRACK</em> will render certain ipables extensions unusable, for example the <em>MASQUERADE</em> target or the <em>state</em> match will not work!
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If connection tracking is required, for example by custom rules in <em>/etc/firewall.user</em>, the <em>conntrack</em> option must be enabled in the corresponding zone to disable <em>NOTRACK</em>. It should appear as <em>option 'conntrack</em> <em>1</em> ' in the right zone in <em>/etc/config/firewall</em>. For further information see <a href="http://security.maruhn.com/iptables-tutorial/x4772.html" class="bare">http://security.maruhn.com/iptables-tutorial/x4772.html</a> .</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="debug_generated_rule_set">Debug generated rule set</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It is possible to observe the iptables commands generated by the firewall program,
+this is useful to track down iptables errors during firewall restarts or to verify
+the outcome of certain uci rules.</p>
+</div>
+<div class="paragraph">
+<p>You can enable debug mode using the <em>-d</em> switch:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># fw3 -d reload 2&gt;/tmp/iptables.log</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Furthermore it is also possible to print the to-be generated ruleset using the <em>print</em> command in conjunction with the <em>-4</em> and <em>-6</em> switches:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># fw3 -4 print &gt; /tmp/ipv4.rules
+# fw3 -6 print &gt; /tmp/ipv6.rules</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="packet_flow">Packet flow</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="input_destined_to_router">INPUT (destined to router)</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Table</th>
+<th class="tableblock halign-left valign-top">Chain</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">raw</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>PREROUTING</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>notrack</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internal chain for NOTRACK rules</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mangle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>PREROUTING</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>fwmark</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internal chain for MARK rules</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nat</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>PREROUTING</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>delegate_prerouting</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internal chain to hold toplevel prerouting rules, dispatches traffic to the corresponding <em>zone<em>name</em>prerouting</em> chains</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>prerouting_rule</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Container chain for custom user prerouting rules (firewall.user)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>zone<em>name</em>prerouting</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Per-zone container chains for DNAT (port forwarding) rules</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>prerouting<em>name</em>rule</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Per-zone container chains for custom user prerouting rules (firewall.user)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mangle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>INPUT</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">filter</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>INPUT</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>delegate_input</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internal chain to hold toplevel input rules, dispatches traffic to the corresponding <em>zone<em>name</em>input</em> chains</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>input_rule</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Container chain for custom user input rules (firewall.user)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>syn_flood</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internal chain to match and drop syn flood attempts</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>zone<em>name</em>input</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Per-zone container chains for input rules</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>input<em>name</em>rule</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Per-zone container chains for custom user input rules (firewall.user)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="output_originating_from_router">OUTPUT (originating from router)</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Table</th>
+<th class="tableblock halign-left valign-top">Chain</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">raw</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>OUTPUT</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mangle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>OUTPUT</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nat</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>OUTPUT</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">filter</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>OUTPUT</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>delegate_output</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internal chain to hold toplevel output rules, dispatches traffic to the corresponding <em>zone<em>name</em>output</em> chains</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>output_rule</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Container chain for custom user output rules (firewall.user)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>zone<em>name</em>output</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Per-zone container chains for output rules</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>output<em>name</em>rule</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Per-zone container chains for custom user output rules (firewall.user)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mangle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>POSTROUTING</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nat</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>POSTROUTING</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>delegate_postrouting</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internal chain to hold toplevel postrouting rules, dispatches traffic to the corresponding <em>zone<em>name</em>postrouting</em> chains</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>postrouting_rule</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Container chain for custom user postrouting rules (firewall.user)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>zone<em>name</em>postrouting</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Per-zone container chains for postrouting rules (masq, snat)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>postrouting<em>name</em>rule</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Per-zone container chains for custom user postrouting rules (firewall.user)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="forward_relayed_through_router">FORWARD (relayed through router)</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Table</th>
+<th class="tableblock halign-left valign-top">Chain</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">raw</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>PREROUTING</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>notrack</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internal chain for NOTRACK rules</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mangle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>PREROUTING</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>fwmark</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internal chain for MARK rules</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nat</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>PREROUTING</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>delegate_prerouting</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internal chain to hold toplevel prerouting rules, dispatches traffic to the corresponding <em>zone<em>name</em>prerouting</em> chains</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>prerouting_rule</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Container chain for custom user prerouting rules (firewall.user)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>zone<em>name</em>prerouting</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Per-zone container chains for DNAT (port forwarding) rules</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>prerouting<em>name</em>rule</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Per-zone container chains for custom user prerouting rules (firewall.user)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mangle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>FORWARD</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>mssfix</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internal chain to hold for TCPMSS rules (mtu_fix)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">filter</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>FORWARD</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>delegate_forward</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internal chain to hold toplevel forward rules, dispatches traffic to the corresponding <em>zone<em>name</em>forward</em> chains</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>forwarding_rule</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Container chain for custom user forward rules (firewall.user)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>zone<em>name</em>forward</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Per-zone container chains for output rules</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>forwarding<em>name</em>rule</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Per-zone container chains for custom user forward rules (firewall.user)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mangle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>POSTROUTING</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nat</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>POSTROUTING</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>delegate_postrouting</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internal chain to hold toplevel postrouting rules, dispatches traffic to the corresponding <em>zone<em>name</em>postrouting</em> chains</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>postrouting_rule</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Container chain for custom user postrouting rules (firewall.user)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>zone<em>name</em>postrouting</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">internal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Per-zone container chains for postrouting rules (masq, snat)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">:::</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>postrouting<em>name</em>rule</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Per-zone container chains for custom user postrouting rules (firewall.user)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+    </div>
+
+    <!-- End Main Content -->
+
+    <!-- Sidebar -->
+
+    <aside class="large-3 columns">
+        
+            <h4>Documents</h4>
+<div class="panel">
+    <div id="toc" class="toc">
+        <ul class="sectlevel0">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="config.html">Configuration</a></li>
+            <li><a href="ubus.html">uBus</a></li>
+            <li><a href="procd.html">Procd</a></li>
+            <li><a href="uci.html">UCI Document</a></li>
+            <ul class="sectlevel0">
+                <li><a href="uci_dnsmasq.html">DHCP</a></li>
+                <li><a href="uci_dropbear.html">Dropbear</a></li>
+                <li class="active"><a href="uci_firewall.html">Firewall</a></li>
+                <li><a href="uci_fstab.html">FSTab</a></li>
+                <li><a href="uci_net.html">Network</a></li>
+                <li><a href="uci_qos.html">QoS</a></li>
+                <li><a href="uci_samba.html">Samba</a></li>
+                <li><a href="uci_system.html">System</a></li>
+                <li><a href="uci_wireless.html">Wireless</a></li>
+            </ul>
+        </ul>
+    </div>
+</div>
+
+        
+    </aside>
+
+    <!-- End Sidebar -->
+</div>
+
+<!-- End Main Content and Sidebar -->
+
+
+<!-- Footer -->
+
+<footer class="row">
+    <div class="large-12 columns">
+        <hr/>
+        <div class="row">
+            <div class="large-12 columns">
+                <p>Last updated 2016-05-24 14:04:48</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="/lede-web/js/vendor/jquery.js"></script>
+<script src="/lede-web/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+
+    var doc = document.documentElement;
+    doc.setAttribute('data-useragent', navigator.userAgent);
+</script>
+</body>
+</html>

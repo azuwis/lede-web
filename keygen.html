@@ -1,0 +1,643 @@
+<!doctype html>
+<!--[if IE 9]>
+<html class="lt-ie10" lang="en"> <![endif]-->
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Key Generation</title>
+
+
+    <meta name="description"
+          content="Linux Embedded Development Environment, an embedded Linux distribution that makes it easy for developers, system administrators or other Linux enthusiasts to build and customize software for embedded devices, especially wireless routers."/>
+
+    <link rel="stylesheet" href="/lede-web/css/foundation.css"/>
+    <link rel="stylesheet" href="/lede-web/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/lede-web/css/coderay.css"/>
+    <link rel="stylesheet" href="/lede-web/css/asciidoctor.css"/>
+    <link rel="stylesheet" href="/lede-web/css/lede.css"/>
+    <script src="/lede-web/js/vendor/modernizr.js"></script>
+    <script src="/lede-web/js/toc.js"></script>
+</head>
+<body>
+
+
+<!-- Nav Bar -->
+
+<nav class="top-bar" data-topbar>
+    <ul class="title-area">
+        <!-- Title Area -->
+        <li class="name">
+            <h1>
+                <a href="#">
+                    <img src="/lede-web/logo/logo_small.png"></img>
+                    <span>Key Generation</span>
+                </a>
+            </h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+    </ul>
+    <section class="top-bar-section">
+        <!-- Right Nav Section -->
+        <ul class="right">
+            <li><a href="/lede-web/index.html">Home</a></li>
+<li><a href="/lede-web/communication.html">Communication</a></li>
+<li><a href="/lede-web/rules.html">Rules</a></li>
+<li><a href="/lede-web/development.html">Development</a></li>
+<li><a href="/lede-web/todo.html">Todo</a></li>
+<li><a href="/lede-web/downloads.html">Downloads</a></li>
+<li><a href="/lede-web/docs/index.html">Documentation</a></li>
+<li><a href="/lede-web/about.html">About</a></li>
+
+        </ul>
+    </section>
+</nav>
+<!-- End Nav -->
+
+
+<!-- Main Page Content and Sidebar -->
+
+<div class="row">
+
+    <!-- Main Blog Content -->
+    <div class="large-9 columns" role="content">
+
+        <div class="sect1">
+<h2 id="generate_gpg_signing_key_pair">Generate GPG signing key pair</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The guide will explain how to generate a new key pair, how to create a
+signing sub key and how to strip the secret master key to avoid leaking
+your primary secret key identity in case your signing key (or the entire
+<code>~/.gnupg/</code>) ever gets lost.</p>
+</div>
+<div class="sect2">
+<h3 id="1_generate_new_fresh_key_pair_on_a_secure_machine">1) Generate new, fresh key pair on a secure machine</h3>
+<div class="listingblock">
+<div class="content">
+<pre>$ mkdir /tmp/signing
+$ chmod 0700 /tmp/signing
+$ gpg --homedir /tmp/signing --gen-key
+gpg (GnuPG) 1.4.18; Copyright (C) 2014 Free Software Foundation, Inc.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+gpg: keyring `/tmp/signing/secring.gpg' created
+gpg: keyring `/tmp/signing/pubring.gpg' created</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Pick 4 to generate an RSA-only key and choose a key size of 4096 bits.
+     For this how-to I choose to set no expiry at all.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Please select what kind of key you want:
+   (1) RSA and RSA (default)
+   (2) DSA and Elgamal
+   (3) DSA (sign only)
+   (4) RSA (sign only)
+Your selection? 4
+RSA keys may be between 1024 and 4096 bits long.
+What keysize do you want? (2048) 4096
+Requested keysize is 4096 bits
+Please specify how long the key should be valid.
+         0 = key does not expire
+      &lt;n&gt;  = key expires in n days
+      &lt;n&gt;w = key expires in n weeks
+      &lt;n&gt;m = key expires in n months
+      &lt;n&gt;y = key expires in n years
+Key is valid for? (0)
+Key does not expire at all
+Is this correct? (y/N) y</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+GPG will ask about your user identity now, provide your real name and
+     the mail address you intend to use for your project communication.
+     I also suggest to provide a meaningful comment, eg. "LEDE Signing Key"
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>You need a user ID to identify your key; the software constructs the user ID
+from the Real Name, Comment and Email Address in this form:
+    "Heinrich Heine (Der Dichter) &lt;heinrichh@duesseldorf.de&gt;"
+
+Real name: Jo-Philipp Wich
+Email address: jo@mein.io
+Comment: LEDE Signing Key
+You selected this USER-ID:
+    "Jo-Philipp Wich (LEDE Signing Key) &lt;jo@mein.io&gt;"
+
+Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit? O
+You need a Passphrase to protect your secret key.</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+At this point enter a good pass phrase twice to protect your secret
+     key, the command will take a while to gather entropy and complete key
+     until it&#8217;ll eventually print the key summary:
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>gpg: /tmp/signing/trustdb.gpg: trustdb created
+gpg: key 612A0E98 marked as ultimately trusted
+public and secret key created and signed.
+
+gpg: checking the trustdb
+gpg: 3 marginal(s) needed, 1 complete(s) needed, PGP trust model
+gpg: depth: 0  valid:   1  signed:   0  trust: 0-, 0q, 0n, 0m, 0f, 1u
+pub   4096R/612A0E98 2016-04-05
+      Key fingerprint = 69B2 6A27 62D0 65E6 6F59  6755 C76F DE50 612A 0E98
+uid                  Jo-Philipp Wich (LEDE Signing Key) &lt;jo@mein.io&gt;
+
+Note that this key cannot be used for encryption.  You may want to use
+the command "--edit-key" to generate a subkey for this purpose.</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="2_generate_a_sub_key">2) Generate a sub key</h3>
+<div class="listingblock">
+<div class="content">
+<pre>$ gpg --homedir /tmp/signing --edit-key jo@mein.io
+gpg (GnuPG) 1.4.18; Copyright (C) 2014 Free Software Foundation, Inc.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Secret key is available.
+
+pub  4096R/612A0E98  created: 2016-04-05  expires: never       usage: SC
+                     trust: ultimate      validity: ultimate
+[ultimate] (1). Jo-Philipp Wich (LEDE Signing Key) &lt;jo@mein.io&gt;</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+In the now appearing interactive gpg prompt enter "addkey" to create
+     a new signing subkey. GnuPG will ask your to unlock the master key using
+     the passphrase you&#8217;ve given in the previous step.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>gpg&gt; addkey
+Key is protected.
+
+You need a passphrase to unlock the secret key for
+user: "Jo-Philipp Wich (LEDE Signing Key) &lt;jo@mein.io&gt;"
+4096-bit RSA key, ID 612A0E98, created 2016-04-05
+
+Please select what kind of key you want:
+   (3) DSA (sign only)
+   (4) RSA (sign only)
+   (5) Elgamal (encrypt only)
+   (6) RSA (encrypt only)</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+We&#8217;ll use a signing-only 4096bit RSA key with an validity of two years
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Your selection? 4
+RSA keys may be between 1024 and 4096 bits long.
+What keysize do you want? (2048) 4096
+Requested keysize is 4096 bits
+Please specify how long the key should be valid.
+         0 = key does not expire
+      &lt;n&gt;  = key expires in n days
+      &lt;n&gt;w = key expires in n weeks
+      &lt;n&gt;m = key expires in n months
+      &lt;n&gt;y = key expires in n years
+Key is valid for? (0) 730
+Key expires at Thu Apr  5 18:19:42 2018 CEST
+Is this correct? (y/N) y
+Really create? (y/N) y</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+At this point, GnuPG will start gathering entropy again, running an
+     "find /" in the background is a good way to speed it up. When done it
+     will print the sub key summary and return to the prompt. Note the ID
+     "1584F206" of the subkey, we&#8217;ll need that in step 4.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>pub  4096R/612A0E98  created: 2016-04-05  expires: never       usage: SC
+                     trust: ultimate      validity: ultimate
+sub  4096R/1584F206  created: 2016-04-05  expires: 2018-04-05  usage: S
+[ultimate] (1). Jo-Philipp Wich (LEDE Signing Key) &lt;jo@mein.io&gt;</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Enter "save" to commit the new key pair and its sub key to disk, the
+     GnuPG will automatically exit to the shell.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>gpg&gt; save</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="3_put_the_key_into_a_vault">3) Put the key into a vault</h3>
+<div class="paragraph">
+<p>At this point it is a good idea to make a <strong>reliable and secure</strong> backup
+of the <code>/tmp/signing/</code> directory, I suggest burning it onto a CDROM or
+copying it onto a thumb drive which you can safely lock away or hide in
+your apartment :)</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="4_export_the_private_sub_key_only">4) Export the private sub key only</h3>
+<div class="paragraph">
+<p>We&#8217;ll now export just the secret sub key since that is all we&#8217;ll ever
+need to sign files. Use the sub key ID from step 2 followed by an
+exclamation mark to select the sub key to export:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ gpg --homedir /tmp/signing --export-secret-subkeys 1584F206! \
+   &gt; /tmp/secret-signing-key.pgp
+$ file /tmp/secret-signing-key.pgp
+secret-signing-key.pgp: PGP\011Secret Key - 1024b created on Tue Apr  5
+16:08:15 2016 - RSA (Encrypt or Sign)</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="5_import_the_secret_signing_sub_key_into_your_actual_key_store">5) Import the secret signing sub key into your actual key store</h3>
+<div class="paragraph">
+<p>You can now import the secret signing sub key on any machine you&#8217;ll use
+for signing files in the future. To import the sub key file, pass it to
+<code>gpg --import</code> and leave out the alternative homedir argument:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ gpg --import /tmp/secret-signing-key.pgp
+gpg: key 612A0E98: secret key imported
+gpg: key 612A0E98: public key "Jo-Philipp Wich (LEDE Signing Key)
+&lt;jo@mein.io&gt;" imported
+gpg: Total number processed: 1
+gpg:               imported: 1  (RSA: 1)
+gpg:       secret keys read: 1
+gpg:   secret keys imported: 1</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can now issue a "gpg -K" to list all secret keys in your key store,
+     you should see the key you&#8217;ve imported with a leading "sec#". The hash
+     mark here indicates that the secret master key is missing, which is what
+     we want.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ gpg -K
+/home/jow/.gnupg/secring.gpg
+ ---------------------------
+[...]
+sec#  4096R/612A0E98 2016-04-05
+uid                  Jo-Philipp Wich (LEDE Signing Key) &lt;jo@mein.io&gt;
+ssb   4096R/1584F206 2016-04-05</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+It is time to upload your public key part to a key server now so that
+     others can easily fetch it by its fingerprint or your chosen mail
+     address later on. For uploading use the primary key ID printed after
+     the "sec#" word in the previous command.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ gpg --keyserver hkp://pool.sks-keyservers.net --send-keys 612A0E98
+gpg: sending key 612A0E98 to hkp server pool.sks-keyservers.net</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="6_delete_original">6) Delete original</h3>
+<div class="paragraph">
+<p>Make sure once again that your backup of the <code>/tmp/signing</code> directory is
+complete and readable, then remove the secret sub key file and the
+entire temporary signing directory:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ rm -r /tmp/signing/
+$ rm /tmp/secret-signing-key.pgp</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You&#8217;re now done setting up a suitable signing key pair.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="7_finish">7) Finish</h3>
+<div class="paragraph">
+<p>To export your public key in ASCII format use the following command,
+again with the primary ID you&#8217;ve already used for uploading the pubkey.</p>
+</div>
+<div class="paragraph">
+<p>Make sure to provide a meaningful comment so that people looking at the
+key file know who it belongs to without having to inspect it using GPG
+utilities:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ gpg --armor --export --no-version \
+	--comment="Public key of Jo-Philipp Wich" 612A0E98</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In order to sign a file with your signing sub key, use the command below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ gpg --no-version -a -b -u 612A0E98 \
+	--comment="My signature for something" -o output.sig input.file</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Use your key ID as filename when adding your public signing key to the
+     repository:
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd keyring/gpg/
+$ gpg --armor --export --no-version \
+  --comment="Public key of Me Myself" 612A0E98 &gt; 612A0E98.asc
+$ git add 612A0E98.asc
+$ git commit -sm "Add my public key"
+$ git push origin master</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="generate_em_usign_em_key_pair">Generate <em>usign</em> key pair</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In order to generate an <em>usign</em> key pair for use in LEDE release and package
+repositories, follow the steps below.</p>
+</div>
+<div class="sect2">
+<h3 id="1_obtain_em_usign_em">1) Obtain <em>usign</em></h3>
+<div class="paragraph">
+<p>Clone the <em>usign</em> repository and compile it. Note that the compilation requires
+an installed <code>cmake</code> to succeed.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ git clone https://git.openwrt.org/project/usign.git
+$ cd usign/
+$ cmake .
+$ make</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Run <code>./usign</code> to check that the binary works.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ ./usign
+Usage: ./usign &lt;command&gt; &lt;options&gt;
+Commands:
+  -V:			verify (needs at least -m and -p|-P)
+  -S:			sign (needs at least -m and -s)
+  -F:			print key fingerprint of public/secret key or signature
+  -G:			generate a new keypair
+Options:
+  -c &lt;comment&gt;: 	add comment to keys
+  -m &lt;file&gt;:		message file
+  -p &lt;file&gt;:		public key file (verify/fingerprint only)
+  -P &lt;path&gt;:		public key directory (verify only)
+  -q:			quiet (do not print verification result, use return code only)
+  -s &lt;file&gt;:		secret key file (sign/fingerprint only)
+  -x &lt;file&gt;:		signature file (defaults to &lt;message file&gt;.sig)</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="2_generate_key_pair">2) Generate key pair</h3>
+<div class="paragraph">
+<p>Instruct the <code>usign</code> executable to generate a new key pair and provide a
+suitable comment to be able to identify the key file later on.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./usign -G -c "LEDE usign key of Jo-Philipp Wich" \
+  -s secret.key -p public.key</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Store the <code>secret.key</code> file in a <strong>secure and reliable</strong> location, you&#8217;ll
+     need it to sign package repositories in the future.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="3_add_public_key_to_the_repository">3) Add public key to the repository</h3>
+<div class="paragraph">
+<p>Obtain the fingerprint of your public key with the <code>usign -F</code> command and use
+it as filename for storing the pubkey in the <code>keyring.git</code> repository:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ ./usign -F -p public.key
+72a57f2191b211e0</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Add the key to Git, using the fingerprint as filename:
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cd keyring/usign/
+$ cp /some/where/public.key 72a57f2191b211e0
+$ git add 72a57f2191b211e0
+$ git commit -sm "Add my public usign key"
+$ git push origin master</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+    </div>
+
+    <!-- End Main Content -->
+
+    <!-- Sidebar -->
+
+    <aside class="large-3 columns">
+        
+            <h4>Links</h4>
+<div class="panel">
+    <ul class="fa-ul">
+        <li><i class="fa-li fa fa-download" aria-hidden="true"></i><a href="https://downloads.lede-project.org/snapshots/targets/">Downloads</a></li>
+        <li><i class="fa-li fa fa-code-fork" aria-hidden="true"></i><a href="https://git.lede-project.org/">Git Repos</a></li>
+        <li><i class="fa-li fa fa-github" aria-hidden="true"></i><a href="https://github.com/lede-project">Github</a></li>
+        <li><i class="fa-li fa fa-archive" aria-hidden="true"></i><a href="https://sources.lede-project.org/">Source Archives</a></li>
+        <li><i class="fa-li fa fa-envelope" aria-hidden="true"></i><a href="http://lists.infradead.org/mailman/listinfo/lede-dev">Mailing List</a></li>
+        <li><i class="fa-li fa fa-twitter" aria-hidden="true"></i><a href="https://twitter.com/lede_project">Twitter</a></li>
+        <li><i class="fa-li fa fa-comment" aria-hidden="true"></i><a href="irc://irc.freenode.org/lede-dev">IRC</a></li>
+    </ul>
+</div>
+
+        
+    </aside>
+
+    <!-- End Sidebar -->
+</div>
+
+<!-- End Main Content and Sidebar -->
+
+
+<!-- Footer -->
+
+<footer class="row">
+    <div class="large-12 columns">
+        <hr/>
+        <div class="row">
+            <div class="large-12 columns">
+                <p>Last updated 2016-05-24 14:04:37</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="/lede-web/js/vendor/jquery.js"></script>
+<script src="/lede-web/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+
+    var doc = document.documentElement;
+    doc.setAttribute('data-useragent', navigator.userAgent);
+</script>
+</body>
+</html>

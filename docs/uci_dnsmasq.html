@@ -1,0 +1,1551 @@
+<!doctype html>
+<!--[if IE 9]>
+<html class="lt-ie10" lang="en"> <![endif]-->
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>DNS and DHCP configuration</title>
+
+
+    <meta name="description"
+          content="Linux Embedded Development Environment, an embedded Linux distribution that makes it easy for developers, system administrators or other Linux enthusiasts to build and customize software for embedded devices, especially wireless routers."/>
+
+    <link rel="stylesheet" href="/lede-web/css/foundation.css"/>
+    <link rel="stylesheet" href="/lede-web/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/lede-web/css/coderay.css"/>
+    <link rel="stylesheet" href="/lede-web/css/asciidoctor.css"/>
+    <link rel="stylesheet" href="/lede-web/css/lede.css"/>
+    <script src="/lede-web/js/vendor/modernizr.js"></script>
+    <script src="/lede-web/js/toc.js"></script>
+</head>
+<body>
+
+
+<!-- Nav Bar -->
+
+<nav class="top-bar" data-topbar>
+    <ul class="title-area">
+        <!-- Title Area -->
+        <li class="name">
+            <h1>
+                <a href="#">
+                    <img src="/lede-web/logo/logo_small.png"></img>
+                    <span>DNS and DHCP configuration</span>
+                </a>
+            </h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+    </ul>
+    <section class="top-bar-section">
+        <!-- Right Nav Section -->
+        <ul class="right">
+            <li><a href="/lede-web/index.html">Home</a></li>
+<li><a href="/lede-web/communication.html">Communication</a></li>
+<li><a href="/lede-web/rules.html">Rules</a></li>
+<li><a href="/lede-web/development.html">Development</a></li>
+<li><a href="/lede-web/todo.html">Todo</a></li>
+<li><a href="/lede-web/downloads.html">Downloads</a></li>
+<li class="active"><a href="/lede-web/docs/index.html">Documentation</a></li>
+<li><a href="/lede-web/about.html">About</a></li>
+
+        </ul>
+    </section>
+</nav>
+<!-- End Nav -->
+
+
+<!-- Main Page Content and Sidebar -->
+
+<div class="row">
+
+    <!-- Main Blog Content -->
+    <div class="large-9 columns" role="content">
+
+        <div class="sect1">
+<h2 id="dns_and_dhcp_configuration">DNS and DHCP configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <em>dnsmasq</em> and dhcpd configuration is located in <strong><em>/etc/config/dhcp</em></strong> and controls both DNS and DHCP server options on the device.</p>
+</div>
+<div class="paragraph">
+<p>In the default configuration this file contains one <em>common section</em> to specify DNS and daemon related options and one or more <em>DHCP pools</em> to define DHCP ranges serving on network interfaces.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sections">Sections</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Possible section types of the <em>dhcp</em> configuration file are defined below. Not all types may appear in the file and most of them are only needed for special configurations. The common ones are the <em>Common Options</em>, the <em>DHCP Pools</em> and <em>Static Leases</em>.</p>
+</div>
+<div class="sect2">
+<h3 id="common_options">Common Options</h3>
+<div class="paragraph">
+<p>The config section type <em>dnsmasq</em> determines values and options relevant to the overall operation of dnsmasq and the DHCP options on all interfaces served. The following table lists all available options, their default value, as well as the corresponding <em>dnsmasq</em> command line option. See <a href="http://www.thekelleys.org.uk/dnsmasq/docs/dnsmasq-man.html">the dnsmasq man page</a> for further details.</p>
+</div>
+<div class="paragraph">
+<p>These are the default settings for the common options:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'dnsmasq'
+	option domainneeded	 1
+	option boguspriv	 1
+	option filterwin2k	 0
+	option localise_queries	 1
+	option rebind_protection 1
+	option rebind_localhost  0
+	option local		 '/lan/'
+	option domain	         'lan'
+	option expandhosts	 1
+	option nonegcache	 0
+	option authoritative	 1
+	option readethers        1
+	option leasefile	 '/tmp/dhcp.leases'
+	option resolvfile	 '/tmp/resolv.conf.auto'</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Options <em>local</em> and <em>domain</em> enable <em>dnsmasq</em> to serve entries in <em>/etc/hosts</em> as well as the DHCP client&#8217;s names as if they were entered into the <em>lan</em> DNS domain.</p>
+</li>
+<li>
+<p>Options <em>domainneeded</em>, <em>boguspriv</em>, <em>localise_queries</em>, and <em>expandhosts</em> make sure that requests for these local host names (and the reverse lookup) never get forwarded to the upstream DNS servers.</p>
+</li>
+<li>
+<p>Option <em>authoritative</em> makes the router the only DHCP server on this network; clients get their IP lease a lot faster this way.</p>
+</li>
+<li>
+<p>Option <em>leasefile</em> stores the leases in a file, so that they can be picked up again if <em>dnsmasq</em> is restarted.</p>
+</li>
+<li>
+<p>Option <em>resolvfile</em> tells <em>dnsmasq</em> to use this file to find upstream name servers; it gets created by the WAN DHCP client or the PPP client.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="all_options">All Options</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Option</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>add_local_domain</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em></p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Add the local domain as search directive in resolv.conf.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>add_local_hostname</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em></p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Add A and PTR records automatically for the local hostname.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>addnhosts</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of file paths</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-H</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Additional host files to read for serving DNS responses</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>authoritative</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-K</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Force <em>dnsmasq</em> into authoritative mode. This speeds up DHCP leasing. Used if this is the only server on the network</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>bogusnxdomain</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of IP addresses</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-B</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IP addresses to convert into NXDOMAIN responses (to counteract upstream DNS servers that never return NXDOMAIN).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>boguspriv</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-b</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reject reverse lookups to private IP ranges where no corresponding entry exists in <em>/etc/hosts</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>cachelocal</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em></p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">When set to <em>0</em>, use each network interface&#8217;s <em>dns</em> address in the local <em>/etc/resolv.conf</em>. Normally, only the loopback address is used, and all queries go through <em>dnsmasq</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>cachesize</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>150</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-c</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Size of <em>dnsmasq</em> query cache.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dbus</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-1</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enable DBus messaging for <em>dnsmasq</em>. <strong>CAUTION</strong>: Standard builds of <em>dnsmasq</em> do not include DBus support.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dhcp_boot</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">--dhcp-boot&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies BOOTP options, in most cases just the file name</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dhcphostsfile</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file path</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">--dhcp-hostsfile</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specify an external file with per host DHCP options</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dhcpleasemax</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>150</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-X</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maximum number of DHCP leases</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dnsforwardmax</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>150</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-0</em> (zero)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maximum number of concurrent connections</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>domain</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">domain name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-s</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DNS domain handed out to DHCP clients</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>domainneeded</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-D</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tells <em>dnsmasq</em> never to forward queries for plain names, without dots or domain parts, to upstream nameservers. If the name is not known from /etc/hosts or DHCP then a "not found" answer is returned</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dnssec</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">--dnssec</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validate DNS replies and cache DNSSEC data. <strong>CAUTION</strong>: Requires the <em>dnsmasq-full</em> package.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dnsseccheckunsigned</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">--dnssec-check-unsigned</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Check the zones of unsigned replies to ensure that unsigned replies are allowed in those zones. This protects against an attacker forging unsigned replies for signed DNS zones, but is slower and requires that the nameservers upstream of <em>dnsmasq</em> are DNSSEC-capable. <strong>CAUTION</strong>: Requires the <em>dnsmasq-full</em> package.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ednspacket_max</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1280</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-P</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specify the largest EDNS.0 UDP packet which is supported by the DNS forwarder</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>enable_tftp</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">--enable-tftp</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enable the builtin TFTP server</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>expandhosts</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-E</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Add the local domain part to names found in <em>/etc/hosts</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>filterwin2k</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-f</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Do not forward requests that cannot be answered by public name servers</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>fqdn</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">--dhcp-fqdn</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Do not resolve unqualified local hostnames. Needs <em>domain</em> to be set.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>interface</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of interface names</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(all interfaces)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-i</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List of interfaces to listen on. If unspecified, <em>dnsmasq</em> will listen to all interfaces except those listed in <em>notinterface</em>. Note that <em>dnsmasq</em> listens on loopback by default.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>leasefile</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file path</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-l</em> (ell)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Store DHCP leases in this file</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>local</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-S</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Look up DNS entries for this domain from <em>/etc/hosts</em>. This follows the same syntax as <em>server</em> entries, see the man page.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>localise_queries</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-y</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Choose IP address to match the incoming interface if multiple addresses are assigned to a host name in <em>/etc/hosts</em>. <strong>CAUTION</strong>: Note well the spelling of this option.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>localservice</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">--local-service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Accept DNS queries only from hosts whose address is on a local subnet, ice. a subnet for which an interface exists on the server.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>logqueries</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-q</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Log the results of DNS queries, dump cache on SIGUSR1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>nodaemon</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-d</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Don&#8217;t daemonize the <em>dnsmasq</em> process</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>nohosts</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-h</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Don&#8217;t read DNS names from <em>/etc/hosts</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>nonegcache</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-N</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Disable caching of negative "no such domain" responses</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>noresolv</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-R</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Don&#8217;t read upstream servers from <em>/etc/resolv.conf</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>notinterface</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of interface names</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-I</em> (eye)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Interfaces <em>dnsmasq</em> should not listen on.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>nonwildcard</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-z</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bind only configured interface addresses, instead of the wildcard address.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>port</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">port number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>53</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-p</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Listening port for DNS queries, disables DNS server functionality if set to <em>0</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>queryport</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-Q</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Use a fixed port for outbound DNS queries</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>readethers</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-Z</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Read static lease entries from <em>/etc/ethers</em>, re-read on SIGHUP</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>rebind_protection</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">--stop-dns-rebind</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enables DNS rebind attack protection by discarding upstream RFC1918 responses</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>rebind_localhost</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">--rebind-localhost-ok</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows upstream 127.0.0.0/8 responses, required for DNS based blacklist services, only takes effect if rebind protection is enabled</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>rebind_domain</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of domain names</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">--rebind-domain-ok</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List of domains to allow RFC1918 responses for, only takes effect if rebind protection is enabled</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>resolvfile</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file path</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>/etc/resolv.conf</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-r</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies an alternative resolv file</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>server</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of strings</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-S</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List of DNS servers to forward requests to. See the <em>dnsmasq</em> man page for syntax details.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>strictorder</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>-o</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Obey order of DNS servers in <em>/etc/resolv.conf</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>tftp_root</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">directory path</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">--tftp-root</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the TFTP root directory</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="dhcp_pools">DHCP Pools</h3>
+<div class="paragraph">
+<p>Sections of the type <em>dhcp</em> specify per interface lease pools and settings for serving DHCP requests. Typically there is at least one section of this type present in the <em>/etc/config/dhcp</em> file to cover the lan interface.</p>
+</div>
+<div class="paragraph">
+<p>You can disable a lease pool for a specific interface by specifying the <em>ignore</em> option in the corresponding section.</p>
+</div>
+<div class="paragraph">
+<p>A minimal example of a <em>dhcp</em> section is listed below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'dhcp' 'lan'
+	option 'interface'   'lan'
+	option 'start'       '100'
+	option 'limit'	     '150'
+	option 'leasetime'   '12h'
+	option ra server
+	option dhcpv6 server</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>lan</em> specifies the LEDE interface that is served by this DHCP pool</p>
+</li>
+<li>
+<p><em>100</em> is the offset from the network address, in the default configuration this would mean start leasing addresses from <em>192.168.1.100</em></p>
+</li>
+<li>
+<p><em>150</em> is the maximum number of addresses that may be leased, in the default configuration this would mean leasing addresses up to <em>192.168.1.250</em></p>
+</li>
+<li>
+<p><em>12h</em> specifies the time to live for handed out leases, twelve hours in this example</p>
+</li>
+<li>
+<p><em>server</em> defines the mode for IPv6 configuration (RA &amp; DHCPv6)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Below is a listing of legal options for <em>dhcp</em> sections.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dhcp_option</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of strings</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The ID dhcp_option here must be with written with an underscore. The init script will translate this to --dhcp-option, with a hyphen, as ultimately used by dnsmasq. Multiple option values can be given for this <em>network-id</em>, with a a space between them and the total string between "". E.g. <em>26,1470</em> or <em>option:mtu, 1470</em> that can assign an MTU per DHCP. Your client must accept MTU by DHCP for this to work. Or "3,192.168.1.1 6,192.168.1.1" to give out gateway and dns server addresses.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dynamicdhcp</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Dynamically allocate client addresses, if set to <em>0</em> only clients present in the <em>ethers</em> files are served</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>force</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Forces DHCP serving on the specified interface even if another DHCP server is detected on the same network segment</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ignore</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies whether <em>dnsmasq</em> should ignore this pool if set to <em>1</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dhcpv6</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>none</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies whether DHCPv6 server should be enabled (<em>server</em>), relayed (<em>relay</em>) or disabled (<em>disabled</em>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ra</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>none</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies whether Router Advertisements should be enabled (<em>server</em>), relayed (<em>relay</em>) or disabled (<em>disabled</em>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ndp</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>none</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies whether NDP should be relayed <em>relay</em> or disabled <em>none</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>master</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies whether DHCPv6, RA and NDP in relay mode is a master interface or not.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>interface</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">logical interface name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the interface associated with this DHCP address pool; must be one of the interfaces defined in <em>/etc/config/network</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>leasetime</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>12h</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the lease time of addresses handed out to clients, for example <em>12h</em> or <em>30m</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>limit</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>150</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the size of the address pool (e.g. with start=100, limit=150, maximum address will be .249)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>networkid</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(value of <em>interface</em>)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The dhcp functionality defined in the dhcp section is limited to the interface indicated here through its <em>network-id</em>. In case omitted the system tries to know the network-id via the <em>interface</em> setting in this dhcp section, through consultation of /etc/config/network. Some IDs get assigned dynamically, are not provided by network, but still can be set here.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>start</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>100</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the offset from the network address of the underlying interface to calculate the minimum address that may be leased to clients. It may be greater than 255 to span subnets.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Notes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Although called <em>interface</em>, this is the network name, i.e. lan, wan, wifi etc. (section names in /etc/config/network), NOT the interface name used internally, like eth0, eth1, wlan0 etc. (the <em>ifname</em> IDs in /etc/config/network).</p>
+</li>
+<li>
+<p>Although called <em>networkid</em>, this is the interface name used internally, i.e. eth0, eth1, wlan0 etc., not the network name (lan, wan, wifi etc.).
+This departs from <em>ifname</em> and <em>network</em> as used in /etc/config/network and in /etc/config/wireless, so double check!</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="static_leases">Static Leases</h3>
+<div class="paragraph">
+<p>You can assign fixed IP addresses to hosts on your network, based on their MAC (hardware) address.</p>
+</div>
+<div class="paragraph">
+<p>The configuration options in this section are used to construct a <em>-G</em> option for <em>dnsmasq</em>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config host
+	option ip       '192.168.1.2'
+	option mac      '00:11:22:33:44:55'
+	option name     'mypc'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This adds the fixed IP address 192.168.1.2 and the name "mypc" for a machine with the (Ethernet) hardware address 00:11:22:33:44:55.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config host
+	option ip       '192.168.1.3'
+	option mac      '11:22:33:44:55:66 aa:bb:cc:dd:ee:ff'
+	option name     'mylaptop'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This adds the fixed IP address 192.168.1.3 and the name "mylaptop" for a machine with the (Ethernet) hardware address 11:22:33:44:55:66 or aa:bb:cc:dd:ee:ff. Note that this is <strong>unreliable</strong> if more than one of the listed mac addresses is on the network simultaneously. It&#8217;s useful for cases such as a laptop with both wireless and wired interfaces, provided that only one will be active at a given time.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ip</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ignore</em> or the IP address to be used for this host.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>mac</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The hardware address(es) of this host, separated by commas.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>hostid</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The IPv6 interface identifier (address suffix) as hexadecimal number (max. 8 chars)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>duid</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The DHCPv6-DUID of this host.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>name</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional hostname to assign.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>tag</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Set the given tag for matching hosts.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dns</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Add static forward and reverse DNS entries for this host.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>broadcast</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Force broadcast DHCP response.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>leasetime</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Host-specific lease time, e.g. 2m, 3h, 5d. Note: introduced by r48801 in trunk</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>As well as adding <em>host</em> sections, you can also enable the <em>dnsmasq</em> section option <em>readethers</em>, and add entries to the <em>/etc/ethers</em> file.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="dhcp_option_example_to_set_an_alternative_default_gateway">DHCP OPTION example to set an alternative default gateway</h3>
+<div class="paragraph">
+<p>You can specify an alternative default Gateway</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'dhcp' 'lan'
+	option 'interface' 'lan'
+	option 'start' '100'
+	option 'limit' '150'
+	option 'leasetime' '12h'
+	list 'dhcp_option' '3,192.168.1.2'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>use the list <em>dhcp_option</em> <em>3,192.168.1.2</em> to set the default gateway. A list of options can be found here  <a href="http://www.networksorcery.com/enp/protocol/bootp/options.htm">here</a></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="booting_options">Booting Options</h3>
+<div class="paragraph">
+<p>Some hosts support booting over the network (PXE booting). DHCP/BOOTP is used to tell the host which file to boot and the server to load it from. Each client can only receive one set of filename and server address options. If different hosts should boot different files, or boot from different servers, you can use <em>network-ids</em> to map options to each client.</p>
+</div>
+<div class="paragraph">
+<p>Usually, you need to set additional DHCP options (through <em>dhcp_option</em>) for further stages of the boot process. See the <em>dnsmasq</em> man page for details on the syntax of the <em>O</em> option.</p>
+</div>
+<div class="paragraph">
+<p>The configuration options in this section are used to construct a <em>-M</em> option for <em>dnsmasq</em>.</p>
+</div>
+<div class="paragraph">
+<p><strong>Note</strong>: odhcp currently lacks support root-path specification. If you need this functionality, disable odhcpd and use dnsmasq instead.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config boot linux
+	option filename         '/tftpboot/pxelinux.0'
+	option serveraddress    '192.168.1.2'
+	option servername       'fileserver'
+	list   dhcp_option      'option:root-path,192.168.1.2:/data/netboot/root'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This tells the client to load pxelinux.0 from the server at 192.168.1.2, and mount root from /data/netboot/root on the same server.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dhcp_option</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of strings</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Additional options to be added for this network-id. <strong>CAUTION</strong>: If you specify this, you also need to specify the network-id.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>filename</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The filename the host should request from the boot server.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>networkid</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The network-id these boot options should apply to. Applies to all clients if left unspecified.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>serveraddress</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The IP address of the boot server.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>servername</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The hostname of the boot server.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>force</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bool</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">dhcp-option will always be sent, even if the client does not ask for it in the parameter request list. This is sometimes needed, for example when sending options to PXELinux.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="classifying_clients_and_assigning_individual_options">Classifying Clients And Assigning Individual Options</h3>
+<div class="paragraph">
+<p>DHCP can provide the client with numerous options, such as the domain name, NTP servers, network booting options, etc. While some settings are applicable to all hosts in a network segment, other are more specific and apply only to a group of hosts, or even only a single one. <em>dnsmasq</em> offers to group DHCP options and their values by a <em>network-id</em>, an alphanumeric identifier, and sending options only to hosts which have been tagged with that <em>network-id</em>.</p>
+</div>
+<div class="paragraph">
+<p>In LEDE, you can tag hosts by the DHCP range they&#8217;re in (section <em>dhcp</em>), or a number of options the client might send with their DHCP request. In each of these sections, you can use the <em>dhcp_option</em> list to add DHCP options to be sent to hosts with this <em>network-id</em>.</p>
+</div>
+<div class="paragraph">
+<p>Each classifying section has two configuration options: the value of the DHCP option used to distinguish clients, and the <em>network-id</em> that these clients should be tagged with. Here&#8217;s a template:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config _classifier_
+	option _classifier_  '_value_'
+	option networkid   '_network-id_'
+	list   dhcp_option '_DHCP-option_'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The placeholder <em><em>classifier</em></em> can be one of these values:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 80%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Classifier</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>mac</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hardware address of the client</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>vendorclass</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String sent by the client representing the vendor of the client. <em>dnsmasq</em> performs a substring match on the vendor class string using this value.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>userclass</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String sent by the client representing the user of the client. <em>dnsmasq</em> performs a substring match on the user class string using this value.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>circuitid</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Matches the circuit ID as sent by the relay agent, as defined in RFC3046.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>remoteid</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Matches the remote ID as sent by the relay agent, as defined in RFC3046.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>subscrid</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Matches the subscriber ID as sent by the relay agent, as defined in RFC3993.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>An example using the <em>mac</em> classifier to create a tagged network for openvpn would look like this in the config file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config mac 'opnvpn'
+	option mac  '00:FF:*:*:*:*'
+	option networkid   'opnvpn'
+	list   dhcp_option '3'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And like this in UCI</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>dhcp.opnvpn=mac
+dhcp.opnvpn.mac=00:FF:*:*:*:*
+dhcp.opnvpn.networkid=opnvpn
+dhcp.opnvpn.dhcp_option=3</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><em>DHCP-option</em> adds a DHCP option for this <em>network-id</em>. See the <em>dnsmasq</em> man page for a complete explanation of the syntax of the <em>-O</em> option.</p>
+</div>
+<div class="paragraph">
+<p><em>force</em> is a bool option.  It forces dhcp-option to always be sent, even if the client does not ask for it in the parameter request list. This is sometimes needed, for example when sending options to PXELinux.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="using_plain_dnsmasq_conf">Using plain dnsmasq.conf</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It is possible to mix the traditional <em>/etc/dnsmasq.conf</em> configuration file with the options found in <em>/etc/config/dhcp</em>.</p>
+</div>
+<div class="paragraph">
+<p>The <em>dnsmasq.conf</em> file does not exist by default but will be processed by <em>dnsmasq</em> on startup if it is present. Note that options in <em>/etc/config/dhcp</em> take precedence over <em>dnsmasq.conf</em> since they are translated to command line arguments.</p>
+</div>
+<div class="paragraph">
+<p>You can have <em>dnsmasq</em> execute a script on every action:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>dhcp-script=/sbin/action.sh</pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="dns_and_dhcp_ports">DNS and DHCP Ports</h3>
+<div class="paragraph">
+<p>DNS needs TCP and UDP port 53 open on the firewall.  DHCP needs UDP ports 67 and 68 open from your zone to/from the firewall.  See <a href="http://wiki.openwrt.org/doc/recipes/guest-wlan" class="bare">http://wiki.openwrt.org/doc/recipes/guest-wlan</a> and <a href="http://www.thekelleys.org.uk/dnsmasq/docs/dnsmasq-man.html" class="bare">http://www.thekelleys.org.uk/dnsmasq/docs/dnsmasq-man.html</a> (viz "--dhcp-alternate-port") for more information.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples">Examples</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="static_lease_mac_address_hot_swap">Static Lease (MAC address hot swap)</h3>
+<div class="paragraph">
+<p>Define a static lease for a host with MAC addresses <em>00:a0:24:5a:33:69</em> and <em>00:11:22:33:44:55</em> (handy when you use both wired and wireless connection on the same computer/laptop - of course, you can use just one MAC address) and assign the IP address <em>192.168.1.230</em> and the hostname <em>example-host</em> to it. We call this <em>MAC address hot swap</em>, since IP address stay same, but MAC address changes.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'host'
+	option 'name' 'example-host'
+	option 'ip'   '192.168.1.230'
+	option 'mac'  '00:a0:24:5a:33:69 00:11:22:33:44:55'</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="troubleshooting">Troubleshooting</h3>
+<div class="paragraph">
+<p><strong>CAUTION</strong>: <strong>Windows 7</strong> has introduced a new <em>Microsoft-enhanced</em> feature. It won&#8217;t assign IP address obtained from a DHCP server to an interface, if the IP was used before for another interface, even if that other interface is <strong>NOT</strong> active currently (i.e. cable disconnected). This behaviour is unique and was not reported for older Windows versions, Mac OS nor Linux.</p>
+</div>
+<div class="paragraph">
+<p>If you try configure MAC address hot swap on your router, Windows 7 clients will end up in an infinite <a href="http://tools.ietf.org/html/rfc1531#section-3.1">DORA</a> loop.</p>
+</div>
+<div class="paragraph">
+<p>Solution:
+- Create a bridge from the wireless and ethernet interfaces on your client</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>it&#8217;s trivial: google&#8594;windows 7 create bridge</p>
+</li>
+<li>
+<p>you will have to add the MAC address of the bridge to <em>/etc/config/dhcp</em>
+*</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'host'
+	option 'name' 'example-host'
+	option 'ip'   '192.168.1.230'
+	option 'mac'  '00:a0:24:5a:33:69 00:11:22:33:44:55 02:a0:24:5a:33:69 02:11:22:33:44:55'</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Since the bridge will probably take and alter your ethernet MAC address, you will lose SLAAC on wifi interface, making your laptop IPv6-disabled when only wireless is up.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Another solution is IPv6 friendly, you don&#8217;t need to create a bridge, nor add MAC address to dnsmasq config file, but it involves user interaction:</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>When you plug the ethernet cable in, disable wireless interface in control panel (power off wireless won&#8217;t do it).</p>
+</li>
+<li>
+<p>When you unplug ethernet cable, enable wireless and disable ethernet.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Notes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://answers.microsoft.com/en-us/windows/forum/windows_7-networking/windows-7-refuses-dhcp-addresses-if-they-were/1b72b289-0f58-492f-afb8-e76c80a81f00" class="bare">http://answers.microsoft.com/en-us/windows/forum/windows_7-networking/windows-7-refuses-dhcp-addresses-if-they-were/1b72b289-0f58-492f-afb8-e76c80a81f00</a></p>
+</li>
+<li>
+<p><em>force</em> is a bool option that will force dhcp-option to always be sent, even if the client does not ask for it in the parameter request list. This is sometimes needed, for example when sending options to PXELinux.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="only_allow_static_leases">Only allow static leases</h3>
+<div class="paragraph">
+<p>If you want to distribute IPv4 addresses to known clients only (static leases), use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config dhcp 'lan'
+...
+	option dynamicdhcp 0</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With this, dnsmasq will consider static leases defined in "config host" blocks and in /etc/ethers, and refuse to hand out any IPv4 address to unknown clients.</p>
+</div>
+<div class="paragraph">
+<p>Note that you shouldn&#8217;t use this as a security feature to prevent unwanted clients from connecting.  A client can simply configure a static IP in the right range to have access to the network.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="custom_domain">Custom Domain</h3>
+<div class="paragraph">
+<p>Define a custom domain name and the corresponding PTR record - assigns the IP address <em>192.168.1.140</em> to the domain name <em>typhoon</em> and construct an appropriate reverse record <em>140.1.168.192.in-addr.arpa</em>. It works like an entry in <em>/etc/hosts</em> but more flexible
+and integrated.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'domain'
+	option 'name' 'typhoon'
+	option 'ip'   '192.168.1.140'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>another example: redirect www.example.com to 1.2.3.4</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'domain'
+	option 'name' 'www.example.com'
+	option 'ip'   '1.2.3.4'</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="srv_rr_for_sip">SRV RR for SIP</h3>
+<div class="paragraph">
+<p>To define an SRV record for SIP over UDP, with the default port of 5060 on the host pbx.mydomain.com, with a class of 0 and a weight of 10 one would use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'srvhost'
+	option srv  '_sip._udp.mydomain.com'
+	option target 'pbx.mydomain.com'
+	option port 5060
+	option class 0
+	option weight 10</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="cname_rr">CNAME RR</h3>
+<div class="paragraph">
+<p>A Canonical Name record specifies that a domain name is an alias for another domain, the "canonical" domain. To specify that the web server also doubles as the FTP server, one might use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'cname'
+	option cname 'ftp.example.com'
+	option target 'www.example.com'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that it is necessary to use fully qualified domain names.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="mx_rr">MX RR</h3>
+<div class="paragraph">
+<p>If you&#8217;re running the mail server for your domain behind a firewall (and therefore, with split-horizon for your own domain) then you might need to convince that mailer that it&#8217;s actually authoritative for your domain.</p>
+</div>
+<div class="paragraph">
+<p>If sendmail tells you "Domain of sender address <a href="mailto:xxx@yyy.zzz">xxx@yyy.zzz</a> does not exist" this is because it isn&#8217;t finding an MX record confirming that it&#8217;s an MX relay for that domain.</p>
+</div>
+<div class="paragraph">
+<p>Adding:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'mxhost'
+	option domain 'yyy.zzz'
+	option relay 'my.host.com'
+	option pref 10</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>will mitigate the issues caused by split-horizon.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="tftp_boot">TFTP Boot</h3>
+<div class="paragraph">
+<p>Direct BOOTP requests to the TFTP server at the IP address <em>192.168.1.2</em> and use <em>/tftpboot/pxelinux.0</em> as boot file name.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'boot'
+	option 'filename'      'pxelinux.0'
+	option 'servername'    'data'
+	option 'serveraddress' '192.168.1.2'</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="multiple_dhcp_options">Multiple DHCP options</h3>
+<div class="paragraph">
+<p>Multiple DHCP options can be configured under a single dhcp_option object.  In this case, option 66 (tftp-server) and option 150 (multiple tftp servers) were used for a Cisco Callmanager deployment.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'dhcp' 'lan'
+	option 'interface' 'lan'
+	option 'start' '62'
+	option 'limit' '192'
+	option 'leasetime' '600h'
+	list 'dhcp_option' '66,172.16.60.64'
+	list 'dhcp_option' '150,172.16.60.64'</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="multiple_dhcp_dns_server_forwarder_instances">Multiple DHCP/DNS server/forwarder instances</h3>
+<div class="paragraph">
+<p>If you need multiple DNS forwarders with different configurations or DHCP server with different sets of lease files,
+have a look at this <a href="https:_dev.openwrt.org/ticket/8862">patch</a>.
+Multiple dnsmasq "named" instances can be configured:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'dnsmasq' 'hotspot'
+	option nonwildcard '1' # Tell dnsmasq to bind specific address(es)
+	option resolvfile '/tmp/resolv.conf.hotspot'
+...</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Your configs are usually active for all instances, but you can limit them to single instances by:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config 'dhcp' 'lan'
+	option 'interface' 'lan'
+	option 'dnsmasq_config' 'hotspot'
+
+config 'host'
+	option 'name' 'chef'
+	option 'mac' '00:00:00:00:00:00'
+	option 'ip' '192.168.1.66'
+	option 'dnsmasq_config' 'hotspot'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The web interface (luci) has not been updated for this patch yet.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="assigning_dhcp_pool_to_a_subnet_in_a_large_network">Assigning DHCP pool to a subnet in a large network</h3>
+<div class="paragraph">
+<p>In DHCP pool limit setting, the start and limit values do <strong>not</strong> refer to the "last digit", they&#8217;re relative offsets to the network address.
+* the network address of 10.0.0.1 / 255.0.0.0 is 10.0.0.0
+* the 10.22.0.1 start address is 22 x /16 subnets away: (2^16) * 22 = 1441792
+* 10.0.0.0 + 1441792 + 1 = 10.22.0.1 &#8594; start = 1441793
+* 10.22.0.254 - 10.22.0.1 = 253 &#8594; limit = 253</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config dhcp lan
+	option interface lan
+	option start 1441793
+	option limit 253</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Test:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>root@lede:~# ipcalc.sh 10.0.0.1 255.0.0.0 1441793 253
+IP=10.0.0.1
+NETMASK=255.0.0.0
+BROADCAST=10.255.255.255
+NETWORK=10.0.0.0
+PREFIX=8
+START=10.22.0.1
+END=10.22.0.254
+root@lede:~#</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="classifying_clients_and_assigning_individual_options_2">Classifying Clients And Assigning Individual Options</h3>
+<div class="paragraph">
+<p>Assign different dhcp-options to a single MAC address:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>uci batch &lt;&lt;'EOF'
+add dhcp mac
+set dhcp.@mac[-1].mac=00:11:22:33:44:55
+set dhcp.@mac[-1].networkid=someone
+add_list dhcp.@mac[-1].dhcp_option=6,192.168.1.3,192.168.1.2,192.168.1.1
+add_list dhcp.@mac[-1].dhcp_option=3,192.168.1.2
+add_list dhcp.@mac[-1].dhcp_option=44,192.168.1.3
+commit dhcp
+EOF
+uci commit dhcp
+/etc/init.d/dnsmasq reload</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Where 6=DNS, 3=Default Gateway, 44=WINS</p>
+</div>
+<div class="paragraph">
+<p>Assign different dhcp-options to multiple hosts:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config host
+	option name 'j400'
+	option mac '00:21:63:75:aa:17'
+	option ip '10.11.12.14'
+	option tag 'vpn'  # assign tag "vpn" to this host
+
+config host
+	option name 'j500'
+	option mac '01:22:64:76:bb:18'
+	option ip '10.11.12.15'
+	option tag 'vpn'  # assign tag "vpn" to this host
+
+config tag 'vpn'  # match tag "vpn"
+	list dhcp_option '6,8.8.8.8,8.8.4.4'  # assign arbitrary extra dhcp options to this tag
+	option force '1'              #dhcp-option will always be sent, even if the client does not ask for it in the parameter request list. This is sometimes needed, for example when sending options to PXELinux.</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>CAUTION</strong>: Specifying a dhcp option without any value, would disable that option. so for example you can use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>	list dhcp_option '3'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>to disable sending a default gateway to a specific client</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="enabling_dhcp_without_enabling_dns">Enabling DHCP without enabling DNS</h3>
+<div class="paragraph">
+<p>This is useful when you just want to hand out addresses to clients, without doing any DNS.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config dnsmasq
+...
+	option port 0
+	option domain ''</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The second option prevents dnsmasq from giving out a domain name and DNS search list to clients: this is useless without DNS resolving.</p>
+</div>
+<div class="paragraph">
+<p>Of course, you will want to hand out the address of a DNS resolver to clients:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config dhcp lan
+	option interface lan
+...
+	list dhcp_option "6,80.67.188.188,6,80.67.169.12"
+	list dns         "2001:913::8"
+	list dns         "2001:910:800::12"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>dhcp_option</code> entry is meant for dnsmasq, while the more elegant <code>dns</code> entries are understood by odhcpd.  By default, odhcpd is only used for IPv6, but if you also use odhcpd for IPv4, you can just use <code>dns</code> entries for everything.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="several_dns_servers">Several DNS servers</h3>
+<div class="listingblock">
+<div class="content">
+<pre>config dnsmasq
+	option domainneeded '1'
+	option localise_queries '1'
+	option local '/lan/'
+	option domain 'lan'
+	option expandhosts '1'
+	option authoritative '1'
+	option readethers '1'
+	option leasefile '/tmp/dhcp.leases'
+	option resolvfile '/tmp/resolv.conf.auto'
+	list server '/subdomain.example.com/192.0.2.1'
+#be careful that some options should be absent (or set to False)
+#to allow the forwarding towards the "so defined" private networks
+#http://en.wikipedia.org/wiki/Private_network
+# likely 'bogusprivat'
+	list server '/example.com/208.67.222.222'
+	option rebind_protection '0'</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="conditional_dns_forwarding_for_windows_active_directory_domains_dns_dependent_directory_based_authentication_services">Conditional DNS Forwarding for Windows Active Directory Domains / DNS Dependent Directory Based Authentication Services</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Install dnsmasq using your local package manager</p>
+</li>
+<li>
+<p>Edit /etc/dnsmasq.conf</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Tells dnsmasq to forward anything with the domain of remote.local to dns server 10.25.11.2
+server=/remote.local/10.25.11.2</p>
+</li>
+<li>
+<p>Listen to requests only coming from the local machine
+listen-address=127.0.0.1</p>
+</li>
+<li>
+<p>Do not cache anything</p>
+</li>
+<li>
+<p>A decent dns server will already cache for your local network
+cache-size=0</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Edit /etc/resolv.conf</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Local LAN Domain
+domain ion.lan</p>
+</li>
+<li>
+<p>local dnsmasq server
+nameserver 127.0.0.1</p>
+</li>
+<li>
+<p>Your main dns server (dnsmasq will forward all requests to this server)
+nameserver 10.20.1.1</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Start dnsmasq</p>
+</li>
+<li>
+<p>Test – ping a local server and remote server using the FQDN</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>All dns requests will be forwarded to 10.20.1.1 except any matching *.remote.local. server.remote.local will be forwarded to 10.25.11.2</p>
+</div>
+<div class="paragraph">
+<p>Credit:  <a href="http://pyther.net/2010/12/dns-conditional-forwarding-dnsmasq/">here</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cat /etc/config/dhcp
+
+config dnsmasq
+	option localise_queries '1'
+	option rebind_protection '0'
+	option authoritative '1'
+	option leasefile '/tmp/dhcp.leases'
+	option localservice '1'
+	option dnssec '0'
+	option cachesize '0'
+	option domain 'example.local'
+	option readethers '1'
+	option logqueries '1'
+	option fliterwin2k '0'
+#Define your Domain and Domain Controllers IP address here.
+	option local '/example.local/192.168.1.X'**
+	list server '/0.openwrt.pool.ntp.org/8.8.8.8'
+	list server '/1.openwrt.pool.ntp.org/8.8.8.8'
+	list server '/2.openwrt.pool.ntp.org/8.8.8.8'
+	list server '/3.openwrt.pool.ntp.org/8.8.8.8'
+	option resolvfile '/etc/resolv.conf'
+	option boguspriv '1'
+
+config dhcp 'lan'
+	option interface 'lan'
+	option start '100'
+	option limit '150'
+	option leasetime '12h'</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Almost completed, Now on to the finalisation of the /etc/resolv.conf  Traditionally /etc/resolv.conf is populated via symlink based on interface settings which get inserted via script into /tmp/resolv.conf. We&#8217;re going to disable this symlink because without doing so it would override our static settings.</p>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll want to remove /etc/resolv.conf
+That will remove the resolv.conf symlink. Then we will add the ip address of the secondary DNS and external resolving address inside the /etc/resolv.conf file finally establishing conditional forwarding, something that should be specified for easy configuration via the GUI.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>rm /etc/resolv.conf
+echo "domain example.local"&gt;&gt;/etc/resolv.conf
+echo "nameserver 127.0.0.1"&gt;&gt;/etc/resolv.conf
+echo "nameserver 208.67.220.220"&gt;&gt;/etc/resolv.conf</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cat /etc/resolv.conf
+#Define your Domain Below  &amp; Public DNS you desire.
+
+domain example.local
+nameserver 127.0.0.1
+nameserver 208.67.220.220</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+    </div>
+
+    <!-- End Main Content -->
+
+    <!-- Sidebar -->
+
+    <aside class="large-3 columns">
+        
+            <h4>Documents</h4>
+<div class="panel">
+    <div id="toc" class="toc">
+        <ul class="sectlevel0">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="config.html">Configuration</a></li>
+            <li><a href="ubus.html">uBus</a></li>
+            <li><a href="procd.html">Procd</a></li>
+            <li><a href="uci.html">UCI Document</a></li>
+            <ul class="sectlevel0">
+                <li class="active"><a href="uci_dnsmasq.html">DHCP</a></li>
+                <li><a href="uci_dropbear.html">Dropbear</a></li>
+                <li><a href="uci_firewall.html">Firewall</a></li>
+                <li><a href="uci_fstab.html">FSTab</a></li>
+                <li><a href="uci_net.html">Network</a></li>
+                <li><a href="uci_qos.html">QoS</a></li>
+                <li><a href="uci_samba.html">Samba</a></li>
+                <li><a href="uci_system.html">System</a></li>
+                <li><a href="uci_wireless.html">Wireless</a></li>
+            </ul>
+        </ul>
+    </div>
+</div>
+
+        
+    </aside>
+
+    <!-- End Sidebar -->
+</div>
+
+<!-- End Main Content and Sidebar -->
+
+
+<!-- Footer -->
+
+<footer class="row">
+    <div class="large-12 columns">
+        <hr/>
+        <div class="row">
+            <div class="large-12 columns">
+                <p>Last updated 2016-05-24 14:04:48</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="/lede-web/js/vendor/jquery.js"></script>
+<script src="/lede-web/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+
+    var doc = document.documentElement;
+    doc.setAttribute('data-useragent', navigator.userAgent);
+</script>
+</body>
+</html>

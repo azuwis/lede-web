@@ -1,0 +1,365 @@
+<!doctype html>
+<!--[if IE 9]>
+<html class="lt-ie10" lang="en"> <![endif]-->
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Development</title>
+
+
+    <meta name="description"
+          content="Linux Embedded Development Environment, an embedded Linux distribution that makes it easy for developers, system administrators or other Linux enthusiasts to build and customize software for embedded devices, especially wireless routers."/>
+
+    <link rel="stylesheet" href="/lede-web/css/foundation.css"/>
+    <link rel="stylesheet" href="/lede-web/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/lede-web/css/coderay.css"/>
+    <link rel="stylesheet" href="/lede-web/css/asciidoctor.css"/>
+    <link rel="stylesheet" href="/lede-web/css/lede.css"/>
+    <script src="/lede-web/js/vendor/modernizr.js"></script>
+    <script src="/lede-web/js/toc.js"></script>
+</head>
+<body>
+
+
+<!-- Nav Bar -->
+
+<nav class="top-bar" data-topbar>
+    <ul class="title-area">
+        <!-- Title Area -->
+        <li class="name">
+            <h1>
+                <a href="#">
+                    <img src="/lede-web/logo/logo_small.png"></img>
+                    <span>Development</span>
+                </a>
+            </h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+    </ul>
+    <section class="top-bar-section">
+        <!-- Right Nav Section -->
+        <ul class="right">
+            <li><a href="/lede-web/index.html">Home</a></li>
+<li><a href="/lede-web/communication.html">Communication</a></li>
+<li><a href="/lede-web/rules.html">Rules</a></li>
+<li class="active"><a href="/lede-web/development.html">Development</a></li>
+<li><a href="/lede-web/todo.html">Todo</a></li>
+<li><a href="/lede-web/downloads.html">Downloads</a></li>
+<li><a href="/lede-web/docs/index.html">Documentation</a></li>
+<li><a href="/lede-web/about.html">About</a></li>
+
+        </ul>
+    </section>
+</nav>
+<!-- End Nav -->
+
+
+<!-- Main Page Content and Sidebar -->
+
+<div class="row">
+
+    <!-- Main Blog Content -->
+    <div class="large-9 columns" role="content">
+
+        <div class="sect1">
+<h2 id="the_source_code">The Source Code</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The LEDE project source code starts off with OpenWrt revision r49258. The code
+is stored inside a git tree which contains all branches and releases ever made
+by OpenWrt. While importing the sources the tree was normalised and some
+minor tweaks were made to committer names and mail addresses.</p>
+</div>
+<div class="paragraph">
+<p>All repositories can be browsed online through
+<a href="http://git.lede-project.org/">Gitweb</a> as well.</p>
+</div>
+<div class="sect2">
+<h3 id="getting_the_em_lede_em_code">Getting The <em>LEDE</em> Code</h3>
+<div class="paragraph">
+<p>Any <em>LEDE</em> development happens in the main <code>source.git</code> repository which is
+accessible via both HTTP and HTTPS:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>git clone http://git.lede-project.org/source.git</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can find a mirror of the repository on Github:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>git clone https://github.com/lede-project/source.git</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="getting_the_openwrt_code">Getting the OpenWrt Code</h3>
+<div class="paragraph">
+<p>We keep the original OpenWrt source code up to
+<a href="https://git.lede-project.org/?p=openwrt/source.git;a=commit;h=ee53a240ac902dc83209008a2671e7fdcf55957a">r49258</a>
+available, mostly as reference and for historic interest.</p>
+</div>
+<div class="paragraph">
+<p>The original OpenWrt Subversion repository has been split up into several Git
+repositories mapping the various SVN directories and tags to proper Git
+branches.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>git clone http://git.lede-project.org/openwrt/source.git
+git clone http://git.lede-project.org/openwrt/packages.git
+git clone http://git.lede-project.org/openwrt/feeds.git
+git clone http://git.lede-project.org/openwrt/docs.git</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="the_web_presence">The Web Presence</h3>
+<div class="paragraph">
+<p>The pages you&#8217;re reading are generated from text files using the
+<a href="http://www.methods.co.nz/asciidoc/">AsciiDoc</a> suite. Any changes made to the
+projects web site will be reflected in our <code>web.git</code> repository:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>git clone http://git.lede-project.org/web.git</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="submitting_patches">Submitting Patches</h3>
+<div class="paragraph">
+<p>The biggest difference is that we now accept pull requests. The tree that shall
+be pulled from needs to be hosted publicly. Small fixes and minor patches can
+also be submitted via the
+<a href="http://lists.infradead.org/mailman/listinfo/lede-dev">development mailing list</a>.
+Submissions should follow these rules</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>TBD</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>All patches need to be sent in a format that they are listed in <a href="http://patchwork.ozlabs.org/project/lede/list/">patchwork</a>.
+If the patch does not get listed in patchwork then it won&#8217;t get processed.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="reporting_bugs">Reporting Bugs</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>All</strong> bug reports need to be submitted via the
+<a href="http://lists.infradead.org/mailman/listinfo/lede-dev">development mailing list</a></p>
+</li>
+<li>
+<p>When reporting bugs please make sure to</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Name the tree/revision</p>
+</li>
+<li>
+<p>Name the affected device</p>
+</li>
+<li>
+<p>What does it do that it should not do / what does it not do that it should do</p>
+</li>
+<li>
+<p>Steps to reproduce</p>
+</li>
+<li>
+<p>What you have already done to fix the problem</p>
+</li>
+<li>
+<p>Any additional info you thinks is important</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Reporting a bug means that you reported a bug. It does not constitute a claim that
+anyone has to work on fixing it.</p>
+</li>
+<li>
+<p>Pointless/vague/silly/&#8230;&#8203; bugs reports will be ignored</p>
+</li>
+<li>
+<p>Feature requests are not Bugs. They will also be ignored.</p>
+</li>
+<li>
+<p>The better your bug report, the more likely it is that it will be worked on.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>All bug reports need to be sent in a format so that they are listed in the issue
+tracker (<em>LINK</em>). If the bug report does not get listed in the issue tracker then
+it won&#8217;t get processed.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="patch_merging_and_tree_life_cycle">Patch Merging And Tree Life Cycle</h3>
+<div class="paragraph">
+<p>We encourage committers to host their own staging trees where they aggregate patches
+that they feel responsible for and/or ones that they created themselves. Once the tree
+has been reviewed and tested it can be proposed for inclusion in the master branch.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Trees will be merged into master at any time</p>
+</li>
+<li>
+<p>Bug fixes can be merged into master directly</p>
+</li>
+<li>
+<p>PRs can be sent to the patches mailing list from any source and will always be considered
+for inclusion if the quality of the tree is good and format of submission is correct</p>
+</li>
+<li>
+<p>Staging trees can be hosted as part of the projects git infrastucture, private servers, &#8230;&#8203;</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="kernel_updates">Kernel updates</h3>
+<div class="paragraph">
+<p>It has proven impractical and a time killer to always be on the very latest kernel within
+2 days of its release. It has caused these issues.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>diversification of kernel versions</p>
+</li>
+<li>
+<p>pressure on maintainers to constantly upgrade rather than stabilise</p>
+</li>
+<li>
+<p>huge effort invested to upgrade 3-4 times between releases</p>
+</li>
+<li>
+<p>huge workload to maintain kmod-* packaging</p>
+</li>
+<li>
+<p>Upgrade to kernels that might not be fully tested</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>This is obviously not an invite to sit on ancient and dusty kernels. A sane path in between
+should be taken that give the community recent kernels without causing unnecessary workload
+and stability issues.</p>
+</div>
+<div class="paragraph">
+<p>There should be a max of three concurrent kernel version. Having only two concurrent versions
+is better than three.</p>
+</div>
+<div class="paragraph">
+<p>In Short - stability should be valued higher than bleeding edge, although bleeding edge is
+also important, but not as a trade-off to stability.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="releases">Releases</h3>
+<div class="paragraph">
+<p>Generating Releases has already been vastly automated. The remaining parts of the process need
+to also be automated before the first <em>LEDE</em> release. We will introduce a TESTERS file that is
+formatted similarly to the MAINTAINERS file of the kernel. Community members can list themselves
+as testers for a target/profile/device. Once a release has been generated testers should receive
+an email informing them of the requirement for images to be tested. It needs to be decided if only
+tested images should be included in the binary release.</p>
+</div>
+<div class="paragraph">
+<p>Releases should</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Happen at least once a year</p>
+</li>
+<li>
+<p>Have at least one maintenance update</p>
+</li>
+<li>
+<p>Provide CVE/critical/&#8230;&#8203; fixes for at least one year after the release</p>
+</li>
+<li>
+<p>Only include maintained targets</p>
+</li>
+<li>
+<p>Only include targets that have seen on device testing</p>
+</li>
+<li>
+<p>Be ready when they are ready</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>See the TODO page for more info.</p>
+</div>
+</div>
+</div>
+</div>
+
+    </div>
+
+    <!-- End Main Content -->
+
+    <!-- Sidebar -->
+
+    <aside class="large-3 columns">
+        
+            <h4>Links</h4>
+<div class="panel">
+    <ul class="fa-ul">
+        <li><i class="fa-li fa fa-download" aria-hidden="true"></i><a href="https://downloads.lede-project.org/snapshots/targets/">Downloads</a></li>
+        <li><i class="fa-li fa fa-code-fork" aria-hidden="true"></i><a href="https://git.lede-project.org/">Git Repos</a></li>
+        <li><i class="fa-li fa fa-github" aria-hidden="true"></i><a href="https://github.com/lede-project">Github</a></li>
+        <li><i class="fa-li fa fa-archive" aria-hidden="true"></i><a href="https://sources.lede-project.org/">Source Archives</a></li>
+        <li><i class="fa-li fa fa-envelope" aria-hidden="true"></i><a href="http://lists.infradead.org/mailman/listinfo/lede-dev">Mailing List</a></li>
+        <li><i class="fa-li fa fa-twitter" aria-hidden="true"></i><a href="https://twitter.com/lede_project">Twitter</a></li>
+        <li><i class="fa-li fa fa-comment" aria-hidden="true"></i><a href="irc://irc.freenode.org/lede-dev">IRC</a></li>
+    </ul>
+</div>
+
+        
+    </aside>
+
+    <!-- End Sidebar -->
+</div>
+
+<!-- End Main Content and Sidebar -->
+
+
+<!-- Footer -->
+
+<footer class="row">
+    <div class="large-12 columns">
+        <hr/>
+        <div class="row">
+            <div class="large-12 columns">
+                <p>Last updated 2016-05-24 14:04:37</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="/lede-web/js/vendor/jquery.js"></script>
+<script src="/lede-web/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+
+    var doc = document.documentElement;
+    doc.setAttribute('data-useragent', navigator.userAgent);
+</script>
+</body>
+</html>

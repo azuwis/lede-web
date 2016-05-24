@@ -1,0 +1,619 @@
+<!doctype html>
+<!--[if IE 9]>
+<html class="lt-ie10" lang="en"> <![endif]-->
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Quality of Service (qos-scripts) configuration</title>
+
+
+    <meta name="description"
+          content="Linux Embedded Development Environment, an embedded Linux distribution that makes it easy for developers, system administrators or other Linux enthusiasts to build and customize software for embedded devices, especially wireless routers."/>
+
+    <link rel="stylesheet" href="/lede-web/css/foundation.css"/>
+    <link rel="stylesheet" href="/lede-web/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/lede-web/css/coderay.css"/>
+    <link rel="stylesheet" href="/lede-web/css/asciidoctor.css"/>
+    <link rel="stylesheet" href="/lede-web/css/lede.css"/>
+    <script src="/lede-web/js/vendor/modernizr.js"></script>
+    <script src="/lede-web/js/toc.js"></script>
+</head>
+<body>
+
+
+<!-- Nav Bar -->
+
+<nav class="top-bar" data-topbar>
+    <ul class="title-area">
+        <!-- Title Area -->
+        <li class="name">
+            <h1>
+                <a href="#">
+                    <img src="/lede-web/logo/logo_small.png"></img>
+                    <span>Quality of Service (qos-scripts) configuration</span>
+                </a>
+            </h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+    </ul>
+    <section class="top-bar-section">
+        <!-- Right Nav Section -->
+        <ul class="right">
+            <li><a href="/lede-web/index.html">Home</a></li>
+<li><a href="/lede-web/communication.html">Communication</a></li>
+<li><a href="/lede-web/rules.html">Rules</a></li>
+<li><a href="/lede-web/development.html">Development</a></li>
+<li><a href="/lede-web/todo.html">Todo</a></li>
+<li><a href="/lede-web/downloads.html">Downloads</a></li>
+<li class="active"><a href="/lede-web/docs/index.html">Documentation</a></li>
+<li><a href="/lede-web/about.html">About</a></li>
+
+        </ul>
+    </section>
+</nav>
+<!-- End Nav -->
+
+
+<!-- Main Page Content and Sidebar -->
+
+<div class="row">
+
+    <!-- Main Blog Content -->
+    <div class="large-9 columns" role="content">
+
+        <div class="sect1">
+<h2 id="quality_of_service_configuration">Quality of Service configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is the documentation for the UCI configuration file <strong><em>/etc/config/qos</em></strong>.</p>
+</div>
+<div class="paragraph">
+<p><strong>WARNING</strong>: <em>luci-app-qos</em> won&#8217;t start until you enable the <em>qos</em> Initscript within the System-&#8594;Startup tab as well as enable qos under Network-&#8594;QoS</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sections">Sections</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A minimal QoS configuration usually consists of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>one <em>interface</em> section</p>
+</li>
+<li>
+<p>some <em>rules</em> allocating packets to at least two buckets</p>
+</li>
+<li>
+<p><em>configuration</em> of the buckets.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="interface">Interface</h3>
+<div class="paragraph">
+<p>Each Interface can have its own buffer. The <em>interface</em> section declares global characteristics of the connection on which the specified interface is communicating. The following options are defined within this section:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config interface dsl
+	option enabled      1
+	option classgroup  "Default"
+	option overhead     1
+	option upload       512
+	option download     4096</pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>enabled</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enable/Disable QoS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>classgroup</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Default</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specify <em>classgroup</em> used for this interface (see description of <em>classgroup</em> below)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>overhead</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">decrease upload and download ratio to prevent link saturation</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>download</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>4096</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Download limit in <em>kilobits/second</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>upload</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>512</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Upload limit in <em>kilobits/second</em></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="rules">Rules</h3>
+<div class="paragraph">
+<p>Each <em>classify</em> section defines one group of packets and which target (i.e. bucket) this group belongs to. All the packets share the bucket specified.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>target</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bucket</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The four defaults are: <em>Priority, Express, Normal</em> and <em>Bulk</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>proto</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>0</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Packets matching this protocol belong to the bucket defined in target</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>srchost</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Packets matching this source host(s) (single IP or in CIDR notation) belong to the bucket defined in target</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dsthost</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Packets matching this destination host(s) (single IP or in CIDR notation) belong to the bucket defined in target</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ports</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Packets matching this, belong to the bucket defined in target</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>srcports</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Packets matching this, belong to the bucket defined in target</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dstports</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Packets matching this, belong to the bucket defined in target</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>portrange</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Packets matching this, belong to the bucket defined in target</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>pktsize</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Packets matching this, belong to the bucket defined in target</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>tcpflags</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Packets matching this, belong to the bucket defined in target</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>mark</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Packets matching this, belong to the bucket defined in target</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>connbytes</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Packets matching this, belong to the bucket defined in target</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>tos</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Packets matching this, belong to the bucket defined in target</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>dscp</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Packets matching this, belong to the bucket defined in target</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>direction</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Packets matching this traffic direction (<em>in</em> or <em>out</em>) belong to the bucket defined in target</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="classgroup">Classgroup</h3>
+<div class="paragraph">
+<p>As we can have more then one interface, we can have more then one classgroup.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config classgroup "Default"
+	option classes      "Priority Express Normal Bulk"
+	option default      "Normal"</pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>classes</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bucket names</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies the list of  names of <em>classes</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>default</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bucket name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Defines which <em>class</em> is considered default</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="classes">Classes</h3>
+<div class="paragraph">
+<p>Each Bucket has its own configuration.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>config class "Normal"
+	option packetsize  1500
+	option packetdelay 100
+	option avgrate     10
+	option priority    5</pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>packetsize</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">in bytes</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>packetdelay</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">in ms</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>maxsize</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">in bytes</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>avgrate</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Average rate for this class, value in % of bandwidth (this value uses for calculate vaues <em>Nx</em> of <em>'tc &#8230;&#8203; hfsc rt m1 N1 d N2 m2 N3</em>')</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>limitrate</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">100</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Defines to how much percent of the available bandwidth this class is capped to, value in %</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>maxsize</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">in bytes</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>priority</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">in %</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="classes_for_advanced_users">Classes (For Advanced Users)</h3>
+<div class="paragraph">
+<p>Below is unverified technical breakdown of each /etc/config/qos class parameters.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>### Params:
+#
+# maxsize:
+#       limits packet size in iptables rule
+#
+# avgrate: (note: sum(avgrates) ~ 100)
+#       rt m1 = avgrate / sum (avgrate) * max_bandwidth
+#       rt m2 = avgrate * max_bandwidth / 100
+#       ls m1 = rt m1
+#
+# packetsize &amp; packetdelay: (only works if avgrate is present)
+#       rt d = max( packetdelay, 'time required for packetsize to transfer' ) (smaller ps -&gt; smaller d)
+#       ls d = rt d
+#
+# priority:
+#       ls m2 = priority / sum (priority) * max_bandwidth
+#
+# limitrate:
+#       ul rate = limitrate * max_bandwidth / 100</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="quick_start_guide">Quick start guide</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Install the qos-scripts package:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>opkg install qos-scripts</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Basic configuration using UCI command line:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>uci set qos.wan.upload=1000            # Upload speed in kBits/s
+uci set qos.wan.download=16000         # Download speed in kBits/s
+uci set qos.wan.enabled=1
+uci commit qos</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Start it and look for error output and test):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>/etc/init.d/qos start</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Make script run at every boot up:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>/etc/init.d/qos enable</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="troubleshooting">Troubleshooting</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Look at the generated traffic control qdisc settings by running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>tc qdisc</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The default (ie no-QoS-applied) values for any interface look like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>qdisc fq_codel 0: dev eth0 root refcnt 2 limit 1024p flows 1024 quantum 300 target 5.0ms interval 100.0ms ecn</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Any interface with only a single qdisc line printed, showing the same settings as this line (this one is for <em>dev eth0</em>), indicates no QoS on that interface.</p>
+</div>
+<div class="paragraph">
+<p>Network interfaces with QoS enabled will have multiple qdisc lines printed, each corresponding to a QoS class, etc.</p>
+</div>
+<div class="paragraph">
+<p>If the printed qdisc settings don&#8217;t seem to be correct, you can preview the <em>tc</em> commands generated from the OpenWRT <em>/etc/config/qos</em> by running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>/usr/lib/qos/generate.sh interface wan</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>(Replace <em>wan</em> with the UCI interface name you&#8217;re debugging, as given in the <em>/etc/config/qos</em> file.)</p>
+</div>
+<div class="paragraph">
+<p>This should print a series of <em>insmod</em> and <em>tc</em> commands used to set up the QoS subsystem. You can debug any errors caused by running these commands by running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>/usr/lib/qos/generate.sh interface wan | sh -x</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The output of <em>/usr/lib/qos/generate.sh</em> is normally executed automatically as part of <em>/etc/hotplug.d/iface/10-qos</em>.</p>
+</div>
+</div>
+</div>
+
+    </div>
+
+    <!-- End Main Content -->
+
+    <!-- Sidebar -->
+
+    <aside class="large-3 columns">
+        
+            <h4>Documents</h4>
+<div class="panel">
+    <div id="toc" class="toc">
+        <ul class="sectlevel0">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="config.html">Configuration</a></li>
+            <li><a href="ubus.html">uBus</a></li>
+            <li><a href="procd.html">Procd</a></li>
+            <li><a href="uci.html">UCI Document</a></li>
+            <ul class="sectlevel0">
+                <li><a href="uci_dnsmasq.html">DHCP</a></li>
+                <li><a href="uci_dropbear.html">Dropbear</a></li>
+                <li><a href="uci_firewall.html">Firewall</a></li>
+                <li><a href="uci_fstab.html">FSTab</a></li>
+                <li><a href="uci_net.html">Network</a></li>
+                <li class="active"><a href="uci_qos.html">QoS</a></li>
+                <li><a href="uci_samba.html">Samba</a></li>
+                <li><a href="uci_system.html">System</a></li>
+                <li><a href="uci_wireless.html">Wireless</a></li>
+            </ul>
+        </ul>
+    </div>
+</div>
+
+        
+    </aside>
+
+    <!-- End Sidebar -->
+</div>
+
+<!-- End Main Content and Sidebar -->
+
+
+<!-- Footer -->
+
+<footer class="row">
+    <div class="large-12 columns">
+        <hr/>
+        <div class="row">
+            <div class="large-12 columns">
+                <p>Last updated 2016-05-24 14:04:48</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="/lede-web/js/vendor/jquery.js"></script>
+<script src="/lede-web/js/foundation.min.js"></script>
+<script>
+    $(document).foundation();
+
+    var doc = document.documentElement;
+    doc.setAttribute('data-useragent', navigator.userAgent);
+</script>
+</body>
+</html>
